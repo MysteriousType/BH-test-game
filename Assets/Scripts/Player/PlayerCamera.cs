@@ -4,12 +4,19 @@
 
     public class PlayerCamera : MonoBehaviour
     {
-        public float lookXLimit = 60.0f;
-        public float lookSpeed = 2.0f;
-
         [Header("Transforms")]
         [SerializeField]
         private Transform _playerCameraParentTransform;
+
+        [Header("Look Settings")]
+        [SerializeField]
+        private float _lookXMin = -60f;
+
+        [SerializeField]
+        private float _lookXMax = 60f;
+
+        [SerializeField]
+        private float _lookSpeed = 2f;
 
         private Vector2 _rotation;
 
@@ -23,9 +30,11 @@
 
         private void Update()
         {
-            _rotation.y += Input.GetAxis("Mouse X") * lookSpeed;
-            _rotation.x += -1f * Input.GetAxis("Mouse Y") * lookSpeed;
-            _rotation.x = Mathf.Clamp(_rotation.x, -lookXLimit, lookXLimit);
+            Vector2 mouseAxis = PlayerInput.MouseAxis;
+            _rotation.y += mouseAxis.x * _lookSpeed;
+            _rotation.x += mouseAxis.y * _lookSpeed * -1f;
+            _rotation.x = Mathf.Clamp(_rotation.x, _lookXMin, _lookXMax);
+
             _playerCameraParentTransform.localRotation = Quaternion.Euler(_rotation.x, 0, 0);
             transform.eulerAngles = new Vector2(0, _rotation.y);
         }

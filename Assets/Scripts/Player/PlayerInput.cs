@@ -6,6 +6,18 @@
     {
         private const string HorizontalAxis = "Horizontal";
         private const string VerticalAxis = "Vertical";
+        private const string MouseX = "Mouse X";
+        private const string MouseY = "Mouse Y";
+
+        public static Vector2 MouseAxis
+        {
+            get
+            {
+                float x = Input.GetAxis(MouseX);
+                float y = Input.GetAxis(MouseY);
+                return new Vector2(x, y);
+            }
+        }
 
         /// <summary>
         /// Axis raw input, where X is a horizontal axis and Y is a vertical one.
