@@ -46,7 +46,7 @@
         private void Update()
         {
             Vector2 mouseAxis = PlayerInput.MouseAxis * _lookSpeed;
-            
+
             if (_verticalInversion)
             {
                 mouseAxis.y *= -1f;
