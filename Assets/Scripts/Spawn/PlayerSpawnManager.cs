@@ -9,7 +9,7 @@
         [SerializeField]
         private Vector3[] _spawnPointPositions;
 
-        public Vector3 GetRandomPosition()
+        public Vector3 GetRandomSpawnPosition()
         {
             int index = Random.Range(0, _spawnPointPositions.Length);
             return _spawnPointPositions[index];
