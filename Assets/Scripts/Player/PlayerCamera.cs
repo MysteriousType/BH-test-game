@@ -6,12 +6,9 @@
     [RequireComponent(typeof(Camera))]
     public class PlayerCamera : MonoBehaviour
     {
-        [Header("Data")]
-        [SerializeField]
-        private PlayerCameraData _playerCameraData;
-
         private Transform _playerTransform;
         private Transform _playerCameraHolderTransform;
+        private PlayerCameraData _playerCameraData;
 
         private Vector2 _playerRotation;
         private Vector3 _defaultCameraPosition;
@@ -24,8 +21,8 @@
             _playerCameraData = playerCameraData;
 
             SetupTransform();
-            SetupCursor();
             SetupDefaultValues();
+            SetupCursor();
         }
 
         private void Update()
