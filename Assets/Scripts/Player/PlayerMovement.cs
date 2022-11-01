@@ -25,9 +25,6 @@ namespace Assets.Scripts.Player
         private float _walkSpeed = 56f;
 
         [SerializeField]
-        private float _acceleration = 35f;
-
-        [SerializeField]
         [Range(0f, 1f)]
         private float _airSpeedMultiplier = 0.4f;
 
@@ -73,8 +70,19 @@ namespace Assets.Scripts.Player
             float distance = _playerCapsuleCollider.height * 0.5f + _groundCheckDistance;
             float radius = _playerCapsuleCollider.radius - _groundCheckRadiusReduction;
             float slopeAngle = 1f - _slopeAngleMax;
-            IsGrounded = Physics.SphereCast(transform.position, radius, Vector3.down, out RaycastHit hit, distance, _groundMask) && hit.normal.y > slopeAngle;
-            _groundNormal = IsGrounded ? hit.normal : FlatGroundNormal;
+
+            _isGrounded = Physics.SphereCast(transform.position, radius, Vector3.down, out RaycastHit hit, distance, _groundMask) && hit.normal.y > slopeAngle;
+
+            if (_isGrounded)
+            {
+                _groundNormal = hit.normal;
+                _playerRigidbody.drag = _groundDrag;
+            }
+            else
+            {
+                _groundNormal = FlatGroundNormal;
+                _playerRigidbody.drag = _airDrag;
+            }
         }
 
         private void MoveOnSlope()
@@ -91,7 +99,7 @@ namespace Assets.Scripts.Player
         {
             Vector3 force = MoveDirectionNormalized * _walkSpeed;
 
-            if (!IsGrounded)
+            if (!_isGrounded)
             {
                 force *= _airSpeedMultiplier;
             }
@@ -102,19 +110,6 @@ namespace Assets.Scripts.Player
         private void Move(Vector3 force) => _playerRigidbody.AddForce(force, ForceMode.Acceleration);
 
         private bool IsOnSlope => _groundNormal.y != FlatGroundNormal.y;
-
-        private bool IsGrounded
-        {
-            get => _isGrounded;
-            set
-            {
-                if (_isGrounded != value)
-                {
-                    _playerRigidbody.drag = value ? _groundDrag : _airDrag;
-                    _isGrounded = value;
-                }
-            }
-        }
 
         private Vector3 MoveDirectionNormalized
         {
