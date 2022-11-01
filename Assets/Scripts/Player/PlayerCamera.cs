@@ -13,7 +13,7 @@
 
         [Header("Look Settings")]
         [SerializeField]
-        private float _lookXMin = -60f;
+        private float _lookXMin = -20f;
 
         [SerializeField]
         private float _lookXMax = 60f;
