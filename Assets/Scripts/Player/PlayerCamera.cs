@@ -5,14 +5,6 @@
     [RequireComponent(typeof(Camera))]
     public class PlayerCamera : MonoBehaviour
     {
-        public float collisionOffset = 0.3f; //To prevent Camera from clipping through Objects
-        public float cameraSpeed = 15f; //How fast the Camera should snap into position if there are no obstacles
-
-        Vector3 defaultPos;
-        Vector3 directionNormalized;
-        Transform parentTransform;
-        float defaultDistance;
-
         [Header("Transforms")]
         [SerializeField]
         private Transform _playerTransform;
@@ -30,17 +22,25 @@
         [SerializeField]
         private float _lookSpeed = 2f;
 
+        [Header("Collision Detection Settings")]
+        [SerializeField]
+        private float _collisionDetectionRadius = 0.15f;
+
+        [SerializeField]
+        [Tooltip("How fast the camera should snap into the default position if there are no obstacles")]
+        private float _cameraMoveSpeed = 15f;
+
         private Vector2 _playerRotation;
+        private Vector3 _defaultCameraPosition;
+        private float _defaultCameraPositionDistance;
 
         private void Start()
         {
             SetupCursor();
             _playerRotation.y = _playerTransform.eulerAngles.y;
 
-            defaultPos = transform.localPosition;
-            directionNormalized = defaultPos.normalized;
-            parentTransform = transform.parent;
-            defaultDistance = Vector3.Distance(defaultPos, Vector3.zero);
+            _defaultCameraPosition = transform.localPosition;
+            _defaultCameraPositionDistance = Vector3.Distance(transform.position, _playerCameraHolderTransform.position);
         }
 
         private void Update()
@@ -56,18 +56,16 @@
 
         private void LateUpdate()
         {
-            Vector3 currentPos = defaultPos;
-            Vector3 dirTmp = parentTransform.TransformPoint(defaultPos) - _playerCameraHolderTransform.position;
+            Vector3 directionToCamera = transform.position - _playerCameraHolderTransform.position;
 
-            if (Physics.SphereCast(_playerCameraHolderTransform.position, collisionOffset, dirTmp, out RaycastHit hit, defaultDistance))
+            if (Physics.SphereCast(_playerCameraHolderTransform.position, _collisionDetectionRadius, directionToCamera, out RaycastHit hit, _defaultCameraPositionDistance))
             {
-                currentPos = directionNormalized * (hit.distance - collisionOffset);
-                transform.localPosition = currentPos;
+                float distance = hit.distance - _collisionDetectionRadius;
+                transform.localPosition = Vector3.Normalize(_defaultCameraPosition) * distance;
+                return;
             }
-            else
-            {
-                transform.localPosition = Vector3.Lerp(transform.localPosition, currentPos, Time.deltaTime * cameraSpeed);
-            }
+
+            transform.localPosition = Vector3.Lerp(transform.localPosition, _defaultCameraPosition, _cameraMoveSpeed * Time.deltaTime);
         }
 
         private void SetupCursor()
