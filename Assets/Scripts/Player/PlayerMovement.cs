@@ -8,6 +8,8 @@ namespace Assets.Scripts.Player
     [RequireComponent(typeof(CapsuleCollider))]
     public class PlayerMovement : NetworkBehaviour
     {
+        public GameObject PlayerCamera;
+
         private readonly Vector3 FlatGroundNormal = Vector3.up;
 
         [Header("Transforms")]
@@ -28,13 +30,18 @@ namespace Assets.Scripts.Player
         {
             _playerRigidbody = GetComponent<Rigidbody>();
             _playerCapsuleCollider = GetComponent<CapsuleCollider>();
+
+            if (!isLocalPlayer)
+            {
+                return;
+            }
         }
 
         private void Update()
         {
             if (!isLocalPlayer)
             {
-                return;
+                PlayerCamera.SetActive(false);
             }
 
             CheckGround();

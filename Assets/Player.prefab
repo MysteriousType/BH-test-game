@@ -217,7 +217,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 1a3bbcbf931716e42accb7006c5e1c04, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerCameraTransform: {fileID: 7810761221216944801}
+  syncMode: 0
+  syncInterval: 0.1
+  PlayerCamera: {fileID: 7810761221216944804}
+  _playerCameraTransform: {fileID: 7810761221147261288}
   _playerData: {fileID: 11400000, guid: af427920cefdf9b49864e13819fe77a1, type: 2}
 --- !u!114 &6591077906051666640
 MonoBehaviour:
