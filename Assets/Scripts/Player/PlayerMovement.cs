@@ -1,13 +1,18 @@
 namespace Assets.Scripts.Player
 {
     using Assets.Scripts.Player.Data;
+    using Mirror;
     using UnityEngine;
 
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CapsuleCollider))]
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerMovement : NetworkBehaviour
     {
         private readonly Vector3 FlatGroundNormal = Vector3.up;
+
+        [Header("Camera")]
+        [SerializeField]
+        private GameObject _playerCamera;
 
         [Header("Transforms")]
         [SerializeField]
@@ -23,6 +28,11 @@ namespace Assets.Scripts.Player
         private bool _isGrounded;
         private Vector3 _groundNormal;
 
+        public override void OnStartLocalPlayer()
+        {
+            _playerCamera.SetActive(true);
+        }
+
         private void Start()
         {
             _playerRigidbody = GetComponent<Rigidbody>();
@@ -31,11 +41,21 @@ namespace Assets.Scripts.Player
 
         private void Update()
         {
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+
             CheckGround();
         }
 
         private void FixedUpdate()
         {
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+
             MoveOnSlope();
             Move();
         }
