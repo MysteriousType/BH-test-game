@@ -21,6 +21,9 @@ namespace Assets.Scripts.Player
         [SerializeField]
         private PlayerData _playerData;
 
+        [SerializeField]
+        private PlayerCameraData _playerCameraData;
+
         private Rigidbody _playerRigidbody;
         private CapsuleCollider _playerCapsuleCollider;
 
@@ -43,7 +46,7 @@ namespace Assets.Scripts.Player
                 return;
             }
 
-            playerCamera.SetupCamera(transform, _playerCameraHolderTransform, _playerData);
+            playerCamera.SetupCamera(transform, _playerCameraHolderTransform, _playerCameraData);
         }
 
         private void Start()

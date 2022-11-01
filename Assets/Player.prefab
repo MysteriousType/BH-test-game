@@ -129,14 +129,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 442296e400a384448a3e3c40d93185ab, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _playerTransform: {fileID: 7810761221310603034}
-  _playerCameraHolderTransform: {fileID: 7810761221147261288}
-  _lookXMin: -20
-  _lookXMax: 60
-  _lookSpeed: 2
-  _verticalInversion: 0
-  _collisionDetectionRadius: 0.15
-  _cameraMoveSpeed: 15
 --- !u!1 &7810761221310603038
 GameObject:
   m_ObjectHideFlags: 0
@@ -219,9 +211,10 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  _playerCamera: {fileID: 7810761221147261289}
   _playerCameraTransform: {fileID: 7810761221147261288}
+  _playerCameraHolderTransform: {fileID: 7810761221147261288}
   _playerData: {fileID: 11400000, guid: af427920cefdf9b49864e13819fe77a1, type: 2}
+  _playerCameraData: {fileID: 11400000, guid: 51db04b7c824c8e42b572dfa2d90cfa4, type: 2}
 --- !u!114 &6591077906051666640
 MonoBehaviour:
   m_ObjectHideFlags: 0
