@@ -36,11 +36,8 @@
 
         private void Start()
         {
+            SetupDefaultValues();
             SetupCursor();
-            _playerRotation.y = _playerTransform.eulerAngles.y;
-
-            _defaultCameraPosition = transform.localPosition;
-            _defaultCameraPositionDistance = Vector3.Distance(transform.position, _playerCameraHolderTransform.position);
         }
 
         private void Update()
@@ -66,6 +63,13 @@
             }
 
             transform.localPosition = Vector3.Lerp(transform.localPosition, _defaultCameraPosition, _cameraMoveSpeed * Time.deltaTime);
+        }
+
+        private void SetupDefaultValues()
+        {
+            _playerRotation.y = _playerTransform.eulerAngles.y;
+            _defaultCameraPosition = transform.localPosition;
+            _defaultCameraPositionDistance = Vector3.Distance(transform.position, _playerCameraHolderTransform.position);
         }
 
         private void SetupCursor()
