@@ -18,4 +18,4 @@ MonoBehaviour:
   _isVerticallyInverted: 0
   _collisionDetectionRadius: 0.15
   _moveSpeed: 15
-  _localPosition: {x: 0, y: 0, z: 0}
+  _localPosition: {x: 0.5, y: 0.6, z: -4.43}
