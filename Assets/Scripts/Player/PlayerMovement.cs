@@ -26,22 +26,22 @@ namespace Assets.Scripts.Player
         private bool _isGrounded;
         private Vector3 _groundNormal;
 
+        public override void OnStartLocalPlayer()
+        {
+            PlayerCamera.SetActive(true);
+        }
+
         private void Start()
         {
             _playerRigidbody = GetComponent<Rigidbody>();
             _playerCapsuleCollider = GetComponent<CapsuleCollider>();
-
-            if (!isLocalPlayer)
-            {
-                return;
-            }
         }
 
         private void Update()
         {
             if (!isLocalPlayer)
             {
-                PlayerCamera.SetActive(false);
+                return;
             }
 
             CheckGround();
