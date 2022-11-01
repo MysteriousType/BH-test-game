@@ -1,6 +1,7 @@
 namespace Assets.Scripts.Player
 {
     using System;
+    using Assets.Scripts.Player.Data;
     using UnityEngine;
 
     [RequireComponent(typeof(Rigidbody))]
@@ -13,34 +14,9 @@ namespace Assets.Scripts.Player
         [SerializeField]
         private Transform _playerCameraTransform;
 
-        [Header("Drag")]
+        [Header("Data")]
         [SerializeField]
-        private float _groundDrag = 7f;
-
-        [SerializeField]
-        private float _airDrag = 2f;
-
-        [Header("Speed")]
-        [SerializeField]
-        private float _walkSpeed = 56f;
-
-        [SerializeField]
-        [Range(0f, 1f)]
-        private float _airSpeedMultiplier = 0.4f;
-
-        [Header("Ground Detection")]
-        [SerializeField]
-        private float _groundCheckDistance = 0.2f;
-
-        [SerializeField]
-        private float _groundCheckRadiusReduction = 0.1f;
-
-        [Range(0f, 1f)]
-        [SerializeField]
-        private float _slopeAngleMax = 0.385f;
-
-        [SerializeField]
-        private LayerMask _groundMask;
+        private PlayerData _playerData;
 
         private Rigidbody _playerRigidbody;
         private CapsuleCollider _playerCapsuleCollider;
@@ -67,21 +43,21 @@ namespace Assets.Scripts.Player
 
         private void CheckGround()
         {
-            float distance = _playerCapsuleCollider.height * 0.5f + _groundCheckDistance;
-            float radius = _playerCapsuleCollider.radius - _groundCheckRadiusReduction;
-            float slopeAngle = 1f - _slopeAngleMax;
+            float distance = _playerCapsuleCollider.height * 0.5f + _playerData.GroundCheckDistance;
+            float radius = _playerCapsuleCollider.radius - _playerData.GroundCheckRadiusReduction;
+            float slopeAngle = 1f - _playerData.SlopeAngleMax;
 
-            _isGrounded = Physics.SphereCast(transform.position, radius, Vector3.down, out RaycastHit hit, distance, _groundMask) && hit.normal.y > slopeAngle;
+            _isGrounded = Physics.SphereCast(transform.position, radius, Vector3.down, out RaycastHit hit, distance, _playerData.GroundMask) && hit.normal.y > slopeAngle;
 
             if (_isGrounded)
             {
                 _groundNormal = hit.normal;
-                _playerRigidbody.drag = _groundDrag;
+                _playerRigidbody.drag = _playerData.GroundDrag;
             }
             else
             {
                 _groundNormal = FlatGroundNormal;
-                _playerRigidbody.drag = _airDrag;
+                _playerRigidbody.drag = _playerData.AirDrag;
             }
         }
 
@@ -97,11 +73,11 @@ namespace Assets.Scripts.Player
 
         private void Move()
         {
-            Vector3 force = MoveDirectionNormalized * _walkSpeed;
+            Vector3 force = MoveDirectionNormalized * _playerData.WalkSpeed;
 
             if (!_isGrounded)
             {
-                force *= _airSpeedMultiplier;
+                force *= _playerData.AirSpeedMultiplier;
             }
 
             Move(force);
