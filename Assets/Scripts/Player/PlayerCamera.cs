@@ -1,17 +1,11 @@
 ﻿namespace Assets.Scripts.Player
 {
+    using Assets.Scripts.Player.Data;
     using UnityEngine;
 
     [RequireComponent(typeof(Camera))]
     public class PlayerCamera : MonoBehaviour
     {
-        [Header("Transforms")]
-        [SerializeField]
-        private Transform _playerTransform;
-
-        [SerializeField]
-        private Transform _playerCameraHolderTransform;
-
         [Header("Look Settings")]
         [SerializeField]
         private float _lookXMin = -20f;
@@ -33,9 +27,21 @@
         [Tooltip("How fast the camera should snap into the default position if there are no obstacles")]
         private float _cameraMoveSpeed = 15f;
 
+        private Transform _playerTransform;
+        private Transform _playerCameraHolderTransform;
+
         private Vector2 _playerRotation;
         private Vector3 _defaultCameraPosition;
         private float _defaultCameraPositionDistance;
+
+        public void SetupCamera(Transform playerTransform, Transform playerCameraHolderTransform, PlayerData playerData)
+        {
+            _playerTransform = playerTransform;
+            _playerCameraHolderTransform = playerCameraHolderTransform;
+
+            transform.parent = playerCameraHolderTransform;
+            //transform.localPosition = cameraLocalPosition;
+        }
 
         private void Start()
         {

@@ -10,13 +10,12 @@ namespace Assets.Scripts.Player
     {
         private readonly Vector3 FlatGroundNormal = Vector3.up;
 
-        [Header("Camera")]
-        [SerializeField]
-        private GameObject _playerCamera;
-
         [Header("Transforms")]
         [SerializeField]
         private Transform _playerCameraTransform;
+
+        [SerializeField]
+        private Transform _playerCameraHolderTransform;
 
         [Header("Data")]
         [SerializeField]
@@ -30,7 +29,21 @@ namespace Assets.Scripts.Player
 
         public override void OnStartLocalPlayer()
         {
-            _playerCamera.SetActive(true);
+            Camera camera = Camera.main;
+
+            if (camera == null)
+            {
+                Debug.LogError($"MainCamera does not exist!");
+                return;
+            }
+
+            if (!camera.TryGetComponent(out PlayerCamera playerCamera))
+            {
+                Debug.LogError($"{nameof(PlayerCamera)} component isn't set to the MainCamera!");
+                return;
+            }
+
+            playerCamera.SetupCamera(transform, _playerCameraHolderTransform, _playerData);
         }
 
         private void Start()
