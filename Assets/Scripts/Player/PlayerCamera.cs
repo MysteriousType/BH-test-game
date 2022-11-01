@@ -6,26 +6,9 @@
     [RequireComponent(typeof(Camera))]
     public class PlayerCamera : MonoBehaviour
     {
-        [Header("Look Settings")]
+        [Header("Data")]
         [SerializeField]
-        private float _lookXMin = -20f;
-
-        [SerializeField]
-        private float _lookXMax = 60f;
-
-        [SerializeField]
-        private float _lookSpeed = 2f;
-
-        [SerializeField]
-        private bool _verticalInversion;
-
-        [Header("Collision Detection Settings")]
-        [SerializeField]
-        private float _collisionDetectionRadius = 0.15f;
-
-        [SerializeField]
-        [Tooltip("How fast the camera should snap into the default position if there are no obstacles")]
-        private float _cameraMoveSpeed = 15f;
+        private PlayerCameraData _playerCameraData;
 
         private Transform _playerTransform;
         private Transform _playerCameraHolderTransform;
@@ -34,33 +17,29 @@
         private Vector3 _defaultCameraPosition;
         private float _defaultCameraPositionDistance;
 
-        public void SetupCamera(Transform playerTransform, Transform playerCameraHolderTransform, PlayerData playerData)
+        public void SetupCamera(Transform playerTransform, Transform playerCameraHolderTransform, PlayerCameraData playerCameraData)
         {
             _playerTransform = playerTransform;
             _playerCameraHolderTransform = playerCameraHolderTransform;
+            _playerCameraData = playerCameraData;
 
-            transform.parent = playerCameraHolderTransform;
-            //transform.localPosition = cameraLocalPosition;
-        }
-
-        private void Start()
-        {
-            SetupDefaultValues();
+            SetupTransform();
             SetupCursor();
+            SetupDefaultValues();
         }
 
         private void Update()
         {
-            Vector2 mouseAxis = PlayerInput.MouseAxis * _lookSpeed;
+            Vector2 mouseAxis = PlayerInput.MouseAxis * _playerCameraData.LookSpeed;
 
-            if (_verticalInversion)
+            if (_playerCameraData.IsVerticallyInverted)
             {
                 mouseAxis.y *= -1f;
             }
 
             _playerRotation.y += mouseAxis.x;
             _playerRotation.x += mouseAxis.y;
-            _playerRotation.x = Mathf.Clamp(_playerRotation.x, _lookXMin, _lookXMax);
+            _playerRotation.x = Mathf.Clamp(_playerRotation.x, _playerCameraData.LookXMin, _playerCameraData.LookXMax);
 
             _playerCameraHolderTransform.localRotation = Quaternion.Euler(_playerRotation.x, 0f, 0f);
             _playerTransform.eulerAngles = new Vector3(0f, _playerRotation.y, 0f);
@@ -70,14 +49,15 @@
         {
             Vector3 directionToCamera = transform.position - _playerCameraHolderTransform.position;
 
-            if (Physics.SphereCast(_playerCameraHolderTransform.position, _collisionDetectionRadius, directionToCamera, out RaycastHit hit, _defaultCameraPositionDistance))
-            {
-                float distance = hit.distance - _collisionDetectionRadius;
-                transform.localPosition = Vector3.Normalize(_defaultCameraPosition) * distance;
-                return;
-            }
+            transform.localPosition = Physics.SphereCast(_playerCameraHolderTransform.position, _playerCameraData.CollisionDetectionRadius, directionToCamera, out RaycastHit hit, _defaultCameraPositionDistance)
+                ? Vector3.Normalize(_defaultCameraPosition) * (hit.distance - _playerCameraData.CollisionDetectionRadius)
+                : Vector3.Lerp(transform.localPosition, _defaultCameraPosition, _playerCameraData.MoveSpeed * Time.deltaTime);
+        }
 
-            transform.localPosition = Vector3.Lerp(transform.localPosition, _defaultCameraPosition, _cameraMoveSpeed * Time.deltaTime);
+        private void SetupTransform()
+        {
+            transform.parent = _playerCameraHolderTransform;
+            transform.localPosition = _playerCameraData.LocalPosition;
         }
 
         private void SetupDefaultValues()
