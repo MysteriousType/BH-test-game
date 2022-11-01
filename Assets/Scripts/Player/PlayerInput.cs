@@ -2,7 +2,7 @@
 {
     using UnityEngine;
 
-    internal static class PlayerInput
+    public static class PlayerInput
     {
         private const string HorizontalAxis = "Horizontal";
         private const string VerticalAxis = "Vertical";

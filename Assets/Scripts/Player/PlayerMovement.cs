@@ -7,10 +7,7 @@ namespace Assets.Scripts.Player
     {
         private readonly Vector3 FlatGroundNormal = Vector3.up;
 
-        [Header("Geometry")]
-        [SerializeField]
-        private Transform _playerTransform;
-
+        [Header("Transforms")]
         [SerializeField]
         private Transform _playerCameraTransform;
 
@@ -72,7 +69,7 @@ namespace Assets.Scripts.Player
             float distance = _playerCapsuleCollider.height * 0.5f + _groundCheckDistance;
             float radius = _playerCapsuleCollider.radius - _groundCheckRadiusReduction;
             float slopeAngle = 1f - _slopeAngleMax;
-            IsGrounded = Physics.SphereCast(_playerTransform.position, radius, Vector3.down, out RaycastHit hit, distance, _groundMask) && hit.normal.y > slopeAngle;
+            IsGrounded = Physics.SphereCast(transform.position, radius, Vector3.down, out RaycastHit hit, distance, _groundMask) && hit.normal.y > slopeAngle;
             _groundNormal = IsGrounded ? hit.normal : FlatGroundNormal;
         }
 
