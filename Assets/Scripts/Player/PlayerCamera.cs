@@ -21,23 +21,23 @@
         [SerializeField]
         private float _lookSpeed = 2f;
 
-        private Vector2 _rotation;
+        private Vector2 _playerRotation;
 
         private void Start()
         {
             SetupCursor();
-            _rotation.y = _playerTransform.eulerAngles.y;
+            _playerRotation.y = _playerTransform.eulerAngles.y;
         }
 
         private void Update()
         {
             Vector2 mouseAxis = PlayerInput.MouseAxis;
-            _rotation.y += mouseAxis.x * _lookSpeed;
-            _rotation.x += mouseAxis.y * _lookSpeed * -1f;
-            _rotation.x = Mathf.Clamp(_rotation.x, _lookXMin, _lookXMax);
+            _playerRotation.y += mouseAxis.x * _lookSpeed;
+            _playerRotation.x += mouseAxis.y * _lookSpeed * -1f;
+            _playerRotation.x = Mathf.Clamp(_playerRotation.x, _lookXMin, _lookXMax);
 
-            _playerCameraHolderTransform.localRotation = Quaternion.Euler(_rotation.x, 0f, 0f);
-            _playerTransform.eulerAngles = new Vector3(0f, _rotation.y, 0f);
+            _playerCameraHolderTransform.localRotation = Quaternion.Euler(_playerRotation.x, 0f, 0f);
+            _playerTransform.eulerAngles = new Vector3(0f, _playerRotation.y, 0f);
         }
 
         private void SetupCursor()
