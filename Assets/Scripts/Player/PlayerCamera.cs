@@ -22,6 +22,9 @@
         [SerializeField]
         private float _lookSpeed = 2f;
 
+        [SerializeField]
+        private bool _verticalInversion;
+
         [Header("Collision Detection Settings")]
         [SerializeField]
         private float _collisionDetectionRadius = 0.15f;
@@ -42,9 +45,15 @@
 
         private void Update()
         {
-            Vector2 mouseAxis = PlayerInput.MouseAxis;
-            _playerRotation.y += mouseAxis.x * _lookSpeed;
-            _playerRotation.x += mouseAxis.y * _lookSpeed * -1f;
+            Vector2 mouseAxis = PlayerInput.MouseAxis * _lookSpeed;
+            
+            if (_verticalInversion)
+            {
+                mouseAxis.y *= -1f;
+            }
+
+            _playerRotation.y += mouseAxis.x;
+            _playerRotation.x += mouseAxis.y;
             _playerRotation.x = Mathf.Clamp(_playerRotation.x, _lookXMin, _lookXMax);
 
             _playerCameraHolderTransform.localRotation = Quaternion.Euler(_playerRotation.x, 0f, 0f);
