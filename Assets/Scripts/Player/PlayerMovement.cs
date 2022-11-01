@@ -3,7 +3,9 @@ namespace Assets.Scripts.Player
     using System;
     using UnityEngine;
 
-    internal class PlayerMovement : MonoBehaviour
+    [RequireComponent(typeof(Rigidbody))]
+    [RequireComponent(typeof(CapsuleCollider))]
+    public class PlayerMovement : MonoBehaviour
     {
         private readonly Vector3 FlatGroundNormal = Vector3.up;
 
@@ -11,34 +13,27 @@ namespace Assets.Scripts.Player
         [SerializeField]
         private Transform _playerCameraTransform;
 
-        [Header("Physics")]
-        [SerializeField]
-        private Rigidbody _playerRigidbody;
-
-        [SerializeField]
-        private CapsuleCollider _playerCapsuleCollider;
-
         [Header("Drag")]
         [SerializeField]
-        private float _groundDrag;
+        private float _groundDrag = 7f;
 
         [SerializeField]
-        private float _airDrag;
+        private float _airDrag = 2f;
 
         [Header("Speed")]
         [SerializeField]
-        private float _walkSpeed;
+        private float _walkSpeed = 56f;
 
         [SerializeField]
-        private float _acceleration;
+        private float _acceleration = 35f;
 
         [SerializeField]
         [Range(0f, 1f)]
-        private float _airSpeedMultiplier;
+        private float _airSpeedMultiplier = 0.4f;
 
         [Header("Ground Detection")]
         [SerializeField]
-        private float _groundCheckDistance;
+        private float _groundCheckDistance = 0.2f;
 
         [SerializeField]
         private float _groundCheckRadiusReduction = 0.1f;
@@ -50,8 +45,17 @@ namespace Assets.Scripts.Player
         [SerializeField]
         private LayerMask _groundMask;
 
+        private Rigidbody _playerRigidbody;
+        private CapsuleCollider _playerCapsuleCollider;
+
         private bool _isGrounded;
         private Vector3 _groundNormal;
+
+        private void Start()
+        {
+            _playerRigidbody = GetComponent<Rigidbody>();
+            _playerCapsuleCollider = GetComponent<CapsuleCollider>();
+        }
 
         private void Update()
         {
