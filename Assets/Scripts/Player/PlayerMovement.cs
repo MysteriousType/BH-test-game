@@ -8,9 +8,11 @@ namespace Assets.Scripts.Player
     [RequireComponent(typeof(CapsuleCollider))]
     public class PlayerMovement : NetworkBehaviour
     {
-        public GameObject PlayerCamera;
-
         private readonly Vector3 FlatGroundNormal = Vector3.up;
+
+        [Header("Camera")]
+        [SerializeField]
+        private GameObject _playerCamera;
 
         [Header("Transforms")]
         [SerializeField]
@@ -28,7 +30,7 @@ namespace Assets.Scripts.Player
 
         public override void OnStartLocalPlayer()
         {
-            PlayerCamera.SetActive(true);
+            _playerCamera.SetActive(true);
         }
 
         private void Start()
