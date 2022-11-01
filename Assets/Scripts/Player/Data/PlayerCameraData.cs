@@ -44,6 +44,5 @@
         public float MoveSpeed => _moveSpeed;
 
         public Vector3 LocalPosition => _localPosition;
-
     }
 }
