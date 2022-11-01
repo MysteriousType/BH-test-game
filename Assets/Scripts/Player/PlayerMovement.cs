@@ -1,11 +1,12 @@
 namespace Assets.Scripts.Player
 {
     using Assets.Scripts.Player.Data;
+    using Mirror;
     using UnityEngine;
 
     [RequireComponent(typeof(Rigidbody))]
     [RequireComponent(typeof(CapsuleCollider))]
-    public class PlayerMovement : MonoBehaviour
+    public class PlayerMovement : NetworkBehaviour
     {
         private readonly Vector3 FlatGroundNormal = Vector3.up;
 
@@ -31,11 +32,21 @@ namespace Assets.Scripts.Player
 
         private void Update()
         {
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+
             CheckGround();
         }
 
         private void FixedUpdate()
         {
+            if (!isLocalPlayer)
+            {
+                return;
+            }
+
             MoveOnSlope();
             Move();
         }
