@@ -1,6 +1,5 @@
 namespace Assets.Scripts.Player
 {
-    using System;
     using Assets.Scripts.Player.Data;
     using UnityEngine;
 
