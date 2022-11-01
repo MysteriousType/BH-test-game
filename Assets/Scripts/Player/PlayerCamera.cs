@@ -6,7 +6,10 @@
     {
         [Header("Transforms")]
         [SerializeField]
-        private Transform _playerCameraParentTransform;
+        private Transform _playerTransform;
+
+        [SerializeField]
+        private Transform _playerCameraHolderTransform;
 
         [Header("Look Settings")]
         [SerializeField]
@@ -22,10 +25,8 @@
 
         private void Start()
         {
-            Cursor.lockState = CursorLockMode.Locked;
-            Cursor.visible = false;
-
-            _rotation.y = transform.eulerAngles.y;
+            SetupCursor();
+            _rotation.y = _playerTransform.eulerAngles.y;
         }
 
         private void Update()
@@ -35,8 +36,14 @@
             _rotation.x += mouseAxis.y * _lookSpeed * -1f;
             _rotation.x = Mathf.Clamp(_rotation.x, _lookXMin, _lookXMax);
 
-            _playerCameraParentTransform.localRotation = Quaternion.Euler(_rotation.x, 0, 0);
-            transform.eulerAngles = new Vector2(0, _rotation.y);
+            _playerCameraHolderTransform.localRotation = Quaternion.Euler(_rotation.x, 0f, 0f);
+            _playerTransform.eulerAngles = new Vector3(0f, _rotation.y, 0f);
+        }
+
+        private void SetupCursor()
+        {
+            Cursor.lockState = CursorLockMode.Locked;
+            Cursor.visible = false;
         }
     }
 }
