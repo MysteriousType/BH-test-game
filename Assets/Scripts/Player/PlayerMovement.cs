@@ -36,7 +36,7 @@ namespace Assets.Scripts.Player
 
             if (camera == null)
             {
-                Debug.LogError($"MainCamera does not exist!");
+                Debug.LogError($"MainCamera cannot be found!");
                 return;
             }
 
