@@ -30,7 +30,8 @@
         private PlayerCamera _playerCamera;
         private Material _playerMeshMaterial;
 
-        public void HitByDash()
+        [Command(requiresAuthority = false)]
+        public void CmdHitByDash()
         {
             _playerColor = Color.red;
         }
@@ -45,15 +46,11 @@
                 return;
             }
 
-            _playerCamera = new PlayerCamera(_playerCameraData, _playerCameraHolderTransform, transform, camera.transform);
-        }
-
-        private void Start()
-        {
             Rigidbody rigidbody = GetComponent<Rigidbody>();
             CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
 
             _playerMovement = new PlayerMovement(capsuleCollider, rigidbody, _playerData, _playerCameraHolderTransform, transform);
+            _playerCamera = new PlayerCamera(_playerCameraData, _playerCameraHolderTransform, transform, camera.transform);
         }
 
         private void OnDestroy()
@@ -84,12 +81,11 @@
             _playerCamera?.LateUpdate();
         }
 
-        [ServerCallback]
         private void OnCollisionEnter(Collision collision)
         {
-            if (_playerMovement.IsDashing && collision.gameObject.TryGetComponent(out Player player))
+            if (collision.gameObject.TryGetComponent(out Player player))
             {
-                player.HitByDash();
+                player.CmdHitByDash();
             }
         }
 
@@ -97,10 +93,11 @@
         {
             if (_playerMeshMaterial == null)
             {
-                _playerMeshMaterial = _playerMeshRenderer.material;
+                _playerMeshMaterial = new Material(_playerMeshRenderer.material);
             }
 
-            _playerMeshMaterial.color = newValue;
+            _playerMeshMaterial.color = _playerColor;
+            _playerMeshRenderer.material = _playerMeshMaterial;
         }
     }
 }
