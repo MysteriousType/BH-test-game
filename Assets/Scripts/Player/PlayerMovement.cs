@@ -1,81 +1,47 @@
 namespace Assets.Scripts.Player
 {
     using Assets.Scripts.Player.Data;
-    using Mirror;
     using UnityEngine;
 
-    [RequireComponent(typeof(Rigidbody))]
-    [RequireComponent(typeof(CapsuleCollider))]
-    public class PlayerMovement : NetworkBehaviour
+    public class PlayerMovement
     {
         private readonly Vector3 FlatGroundNormal = Vector3.up;
-
-        [Header("Transforms")]
-        [SerializeField]
-        private Transform _playerCameraTransform;
-
-        [SerializeField]
-        private Transform _playerCameraHolderTransform;
-
-        [Header("Data")]
-        [SerializeField]
-        private PlayerData _playerData;
-
-        [SerializeField]
-        private PlayerCameraData _playerCameraData;
-
-        private Rigidbody _playerRigidbody;
-        private CapsuleCollider _playerCapsuleCollider;
+        private readonly CapsuleCollider PlayerCapsuleCollider;
+        private readonly Rigidbody PlayerRigidbody;
+        private readonly PlayerData PlayerData;
+        private readonly Transform PlayerCameraTransform;
+        private readonly Transform PlayerTransform;
 
         private bool _isDashing;
         private bool _isGrounded;
+
         private Vector3 _groundNormal;
         private Vector3 _previousPosition;
+
         private float _dashingPassedDistance;
 
-        public override void OnStartLocalPlayer()
+        public PlayerMovement(
+            CapsuleCollider playerCapsuleCollider,
+            Rigidbody playerRigidbody,
+            PlayerData playerData,
+            Transform playerCameraTransform,
+            Transform playerTransform)
         {
-            Camera camera = Camera.main;
-
-            if (camera == null)
-            {
-                Debug.LogError($"MainCamera cannot be found!");
-                return;
-            }
-
-            if (!camera.TryGetComponent(out PlayerCamera playerCamera))
-            {
-                Debug.LogError($"{nameof(PlayerCamera)} component isn't set to the MainCamera!");
-                return;
-            }
-
-            playerCamera.SetupCamera(transform, _playerCameraHolderTransform, _playerCameraData);
+            PlayerCapsuleCollider = playerCapsuleCollider;
+            PlayerRigidbody = playerRigidbody;
+            PlayerData = playerData;
+            PlayerCameraTransform = playerCameraTransform;
+            PlayerTransform = playerTransform;
         }
 
-        private void Start()
+        public void Update()
         {
-            _playerRigidbody = GetComponent<Rigidbody>();
-            _playerCapsuleCollider = GetComponent<CapsuleCollider>();
-        }
-
-        private void Update()
-        {
-            if (!isLocalPlayer)
-            {
-                return;
-            }
-
             CheckDashing();
             CheckGround();
         }
 
-        private void FixedUpdate()
+        public void FixedUpdate()
         {
-            if (!isLocalPlayer)
-            {
-                return;
-            }
-
             MoveOnSlope();
             Move();
         }
@@ -87,21 +53,21 @@ namespace Assets.Scripts.Player
                 return;
             }
 
-            float distance = _playerCapsuleCollider.height * 0.5f + _playerData.GroundCheckDistance;
-            float radius = _playerCapsuleCollider.radius - _playerData.GroundCheckRadiusReduction;
-            float slopeAngle = 1f - _playerData.SlopeAngleMax;
+            float distance = PlayerCapsuleCollider.height * 0.5f + PlayerData.GroundCheckDistance;
+            float radius = PlayerCapsuleCollider.radius - PlayerData.GroundCheckRadiusReduction;
+            float slopeAngle = 1f - PlayerData.SlopeAngleMax;
 
-            _isGrounded = Physics.SphereCast(transform.position, radius, Vector3.down, out RaycastHit hit, distance, _playerData.GroundMask) && hit.normal.y > slopeAngle;
+            _isGrounded = Physics.SphereCast(PlayerTransform.position, radius, Vector3.down, out RaycastHit hit, distance, PlayerData.GroundMask) && hit.normal.y > slopeAngle;
 
             if (_isGrounded)
             {
                 _groundNormal = hit.normal;
-                _playerRigidbody.drag = _playerData.GroundDrag;
+                PlayerRigidbody.drag = PlayerData.GroundDrag;
             }
             else
             {
                 _groundNormal = FlatGroundNormal;
-                _playerRigidbody.drag = _playerData.AirDrag;
+                PlayerRigidbody.drag = PlayerData.AirDrag;
             }
         }
 
@@ -114,16 +80,16 @@ namespace Assets.Scripts.Player
 
             if (IsDashing)
             {
-                float passedDistance = Vector3.Distance(transform.position, _previousPosition);
+                float passedDistance = Vector3.Distance(PlayerTransform.position, _previousPosition);
                 _dashingPassedDistance += passedDistance;
 
-                if (_dashingPassedDistance >= _playerData.DashDistance || passedDistance < 0.001f)
+                if (_dashingPassedDistance >= PlayerData.DashDistance || passedDistance < 0.001f)
                 {
                     IsDashing = false;
                 }
             }
 
-            _previousPosition = transform.position;
+            _previousPosition = PlayerTransform.position;
         }
 
         private void MoveOnSlope()
@@ -143,15 +109,15 @@ namespace Assets.Scripts.Player
 
             if (IsDashing)
             {
-                speed = _playerData.DashSpeed;
+                speed = PlayerData.DashSpeed;
             }
             else
             {
-                speed = _playerData.WalkSpeed;
+                speed = PlayerData.WalkSpeed;
 
                 if (!_isGrounded)
                 {
-                    speed *= _playerData.AirSpeedMultiplier;
+                    speed *= PlayerData.AirSpeedMultiplier;
                 }
             }
 
@@ -159,7 +125,7 @@ namespace Assets.Scripts.Player
             Move(force);
         }
 
-        private void Move(Vector3 force) => _playerRigidbody.AddForce(force, ForceMode.Acceleration);
+        private void Move(Vector3 force) => PlayerRigidbody.AddForce(force, ForceMode.Acceleration);
 
         private bool IsOnSlope => _groundNormal.y != FlatGroundNormal.y;
 
@@ -176,10 +142,10 @@ namespace Assets.Scripts.Player
                 if (!value)
                 {
                     _dashingPassedDistance = 0f;
-                    _playerRigidbody.velocity = Vector3.zero;
+                    PlayerRigidbody.velocity = Vector3.zero;
                 }
 
-                _playerRigidbody.useGravity = !value;
+                PlayerRigidbody.useGravity = !value;
                 _isDashing = value;
             }
         }
@@ -189,7 +155,7 @@ namespace Assets.Scripts.Player
             get
             {
                 Vector2 axisInput = PlayerInput.AxisNormalized;
-                Vector3 moveDirection = _playerCameraTransform.right * axisInput.x + _playerCameraTransform.forward * axisInput.y;
+                Vector3 moveDirection = PlayerCameraTransform.right * axisInput.x + PlayerCameraTransform.forward * axisInput.y;
                 moveDirection.y = 0f;
 
                 return IsOnSlope

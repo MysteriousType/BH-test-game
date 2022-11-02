@@ -3,65 +3,59 @@
     using Assets.Scripts.Player.Data;
     using UnityEngine;
 
-    [RequireComponent(typeof(Camera))]
-    public class PlayerCamera : MonoBehaviour
+    public class PlayerCamera
     {
-        private Transform _playerTransform;
-        private Transform _playerCameraHolderTransform;
-        private PlayerCameraData _playerCameraData;
+        private readonly PlayerCameraData PlayerCameraData;
+        private readonly Transform PlayerCameraHolderTransform;
+        private readonly Transform PlayerTransform;
+        private readonly Transform PlayerCameraTransform;
+        private readonly Vector3 DefaultCameraPosition;
+        private readonly float DefaultCameraPositionDistance;
 
         private Vector2 _playerRotation;
-        private Vector3 _defaultCameraPosition;
-        private float _defaultCameraPositionDistance;
 
-        public void SetupCamera(Transform playerTransform, Transform playerCameraHolderTransform, PlayerCameraData playerCameraData)
+        public PlayerCamera(PlayerCameraData playerCameraData, Transform playerCameraHolderTransform, Transform playerTransform, Transform playerCameraTransform)
         {
-            _playerTransform = playerTransform;
-            _playerCameraHolderTransform = playerCameraHolderTransform;
-            _playerCameraData = playerCameraData;
+            PlayerCameraData = playerCameraData;
+            PlayerCameraHolderTransform = playerCameraHolderTransform;
+            PlayerTransform = playerTransform;
 
-            SetupTransform();
-            SetupDefaultValues();
+            PlayerCameraTransform = playerCameraTransform;
+            PlayerCameraTransform.parent = playerCameraHolderTransform;
+            PlayerCameraTransform.localPosition = playerCameraData.LocalPosition;
+
+            DefaultCameraPosition = playerCameraTransform.localPosition;
+            DefaultCameraPositionDistance = Vector3.Distance(playerCameraTransform.position, playerCameraHolderTransform.position);
+
+            _playerRotation.y = playerTransform.eulerAngles.y;
+
             SetupCursor();
         }
 
-        private void Update()
+        public void Update()
         {
-            Vector2 mouseAxis = PlayerInput.MouseAxis * _playerCameraData.LookSpeed;
+            Vector2 mouseAxis = PlayerInput.MouseAxis * PlayerCameraData.LookSpeed;
 
-            if (_playerCameraData.IsVerticallyInverted)
+            if (PlayerCameraData.IsVerticallyInverted)
             {
                 mouseAxis.y *= -1f;
             }
 
             _playerRotation.y += mouseAxis.x;
             _playerRotation.x += mouseAxis.y;
-            _playerRotation.x = Mathf.Clamp(_playerRotation.x, _playerCameraData.LookXMin, _playerCameraData.LookXMax);
+            _playerRotation.x = Mathf.Clamp(_playerRotation.x, PlayerCameraData.LookXMin, PlayerCameraData.LookXMax);
 
-            _playerCameraHolderTransform.localRotation = Quaternion.Euler(_playerRotation.x, 0f, 0f);
-            _playerTransform.eulerAngles = new Vector3(0f, _playerRotation.y, 0f);
+            PlayerCameraHolderTransform.localRotation = Quaternion.Euler(_playerRotation.x, 0f, 0f);
+            PlayerTransform.eulerAngles = new Vector3(0f, _playerRotation.y, 0f);
         }
 
-        private void LateUpdate()
+        public void LateUpdate()
         {
-            Vector3 directionToCamera = transform.position - _playerCameraHolderTransform.position;
+            Vector3 directionToCamera = PlayerCameraTransform.position - PlayerCameraHolderTransform.position;
 
-            transform.localPosition = Physics.SphereCast(_playerCameraHolderTransform.position, _playerCameraData.CollisionDetectionRadius, directionToCamera, out RaycastHit hit, _defaultCameraPositionDistance)
-                ? Vector3.Normalize(_defaultCameraPosition) * (hit.distance - _playerCameraData.CollisionDetectionRadius)
-                : Vector3.Lerp(transform.localPosition, _defaultCameraPosition, _playerCameraData.MoveSpeed * Time.deltaTime);
-        }
-
-        private void SetupTransform()
-        {
-            transform.parent = _playerCameraHolderTransform;
-            transform.localPosition = _playerCameraData.LocalPosition;
-        }
-
-        private void SetupDefaultValues()
-        {
-            _playerRotation.y = _playerTransform.eulerAngles.y;
-            _defaultCameraPosition = transform.localPosition;
-            _defaultCameraPositionDistance = Vector3.Distance(transform.position, _playerCameraHolderTransform.position);
+            PlayerCameraTransform.localPosition = Physics.SphereCast(PlayerCameraHolderTransform.position, PlayerCameraData.CollisionDetectionRadius, directionToCamera, out RaycastHit hit, DefaultCameraPositionDistance)
+                ? Vector3.Normalize(DefaultCameraPosition) * (hit.distance - PlayerCameraData.CollisionDetectionRadius)
+                : Vector3.Lerp(PlayerCameraTransform.localPosition, DefaultCameraPosition, PlayerCameraData.MoveSpeed * Time.deltaTime);
         }
 
         private void SetupCursor()
