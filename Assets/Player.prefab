@@ -131,8 +131,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 1
-  sendRate: 30
-  bufferTimeMultiplier: 2
+  sendRate: 3
+  bufferTimeMultiplier: 3
   bufferSizeLimit: 64
   catchupNegativeThreshold: -1
   catchupPositiveThreshold: 1
@@ -150,7 +150,7 @@ MonoBehaviour:
   syncPosition: 1
   syncRotation: 1
   syncScale: 0
-  showGizmos: 0
+  showGizmos: 1
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!114 &6860661991172636151
