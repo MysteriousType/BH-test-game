@@ -1,6 +1,5 @@
 namespace Assets.Scripts.Player
 {
-    using System.Collections;
     using Assets.Scripts.Player.Data;
     using Mirror;
     using UnityEngine;
@@ -32,7 +31,6 @@ namespace Assets.Scripts.Player
         private bool _isGrounded;
         private Vector3 _groundNormal;
         private Vector3 _previousPosition;
-        private Vector3 _dashingDirection;
         private float _dashingDistance;
 
         public override void OnStartLocalPlayer()
@@ -109,13 +107,11 @@ namespace Assets.Scripts.Player
 
         private void CheckDashing()
         {
-            Vector3 movementDirection = MoveDirectionNormalized;
             bool wasDashing = _isDashing;
-            _isDashing = _isDashing || (!_isDashing && PlayerInput.Dash && movementDirection != Vector3.zero);
+            _isDashing = _isDashing || (!_isDashing && PlayerInput.Dash);
 
             if (!wasDashing && _isDashing)
             {
-                _dashingDirection = movementDirection;
                 _playerRigidbody.useGravity = false;
                 _playerRigidbody.velocity = Vector3.zero;
             }
@@ -150,17 +146,15 @@ namespace Assets.Scripts.Player
         private void Move()
         {
             float speed;
-            Vector3 movementDirection;
+            Vector3 movementDirection = MoveDirectionNormalized;
 
             if (_isDashing)
             {
                 speed = _playerData.DashSpeed;
-                movementDirection = _dashingDirection;
             }
             else
             {
                 speed = _playerData.WalkSpeed;
-                movementDirection = MoveDirectionNormalized;
 
                 if (!_isGrounded)
                 {
