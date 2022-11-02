@@ -1,5 +1,6 @@
 namespace Assets.Scripts.Player
 {
+    using System.Collections;
     using Assets.Scripts.Player.Data;
     using Mirror;
     using UnityEngine;
@@ -27,8 +28,11 @@ namespace Assets.Scripts.Player
         private Rigidbody _playerRigidbody;
         private CapsuleCollider _playerCapsuleCollider;
 
+        private bool _isDashing;
         private bool _isGrounded;
         private Vector3 _groundNormal;
+        private Vector3 _previousPosition;
+        private float _dashingDistance;
 
         public override void OnStartLocalPlayer()
         {
@@ -62,7 +66,13 @@ namespace Assets.Scripts.Player
                 return;
             }
 
+            if (_isDashing)
+            {
+                return;
+            }
+
             CheckGround();
+            CheckDashing();
         }
 
         private void FixedUpdate()
@@ -96,9 +106,26 @@ namespace Assets.Scripts.Player
             }
         }
 
+        private void CheckDashing()
+        {
+            _isDashing = _isDashing || (!_isDashing && PlayerInput.Dash);
+            _previousPosition = transform.position;
+
+            if (_isDashing)
+            {
+                _dashingDistance += Vector3.Distance(transform.position, _previousPosition);
+
+                if (_dashingDistance >= _playerData.DashDistance)
+                {
+                    _isDashing = false;
+                    _dashingDistance = 0f;
+                }
+            }
+        }
+
         private void MoveOnSlope()
         {
-            if (IsOnSlope)
+            if (IsOnSlope && !_isDashing)
             {
                 Vector3 slipDirection = _groundNormal + Physics.gravity.normalized;
                 Vector3 antiSlipVelocity = slipDirection * Physics.gravity.magnitude * -1f;
@@ -108,13 +135,23 @@ namespace Assets.Scripts.Player
 
         private void Move()
         {
-            Vector3 force = MoveDirectionNormalized * _playerData.WalkSpeed;
+            float speed;
 
-            if (!_isGrounded)
+            if (_isDashing)
             {
-                force *= _playerData.AirSpeedMultiplier;
+                speed = _playerData.DashSpeed;
+            }
+            else
+            {
+                speed = _playerData.WalkSpeed;
+
+                if (!_isGrounded)
+                {
+                    speed *= _playerData.AirSpeedMultiplier;
+                }
             }
 
+            Vector3 force = MoveDirectionNormalized * speed;
             Move(force);
         }
 
