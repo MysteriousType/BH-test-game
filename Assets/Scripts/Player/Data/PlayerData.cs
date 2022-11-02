@@ -22,7 +22,7 @@
 
         [Header("Dashing")]
         [SerializeField]
-        private float _dashSpeed = 200f;
+        private float _dashSpeed = 350f;
 
         [SerializeField]
         private float _dashDistance = 10f;
