@@ -21,9 +21,6 @@ namespace Assets.Scripts.Player
         [SerializeField]
         private PlayerData _playerData;
 
-        [SerializeField]
-        private PlayerCameraData _playerCameraData;
-
         private Rigidbody _playerRigidbody;
         private CapsuleCollider _playerCapsuleCollider;
 
@@ -32,25 +29,6 @@ namespace Assets.Scripts.Player
         private Vector3 _groundNormal;
         private Vector3 _previousPosition;
         private float _dashingPassedDistance;
-
-        public override void OnStartLocalPlayer()
-        {
-            Camera camera = Camera.main;
-
-            if (camera == null)
-            {
-                Debug.LogError($"MainCamera cannot be found!");
-                return;
-            }
-
-            if (!camera.TryGetComponent(out PlayerCamera playerCamera))
-            {
-                Debug.LogError($"{nameof(PlayerCamera)} component isn't set to the MainCamera!");
-                return;
-            }
-
-            playerCamera.SetupCamera(transform, _playerCameraHolderTransform, _playerCameraData);
-        }
 
         private void Start()
         {
