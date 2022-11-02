@@ -77,7 +77,7 @@
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (collision.gameObject.TryGetComponent(out Player player))
+            if (_playerMovement.IsDashing && collision.gameObject.TryGetComponent(out Player player))
             {
                 player.HitByDash();
             }
