@@ -50,7 +50,7 @@
             _invincibilityDurationTime = Time.time + invincibilityEffectDuration;
         }
 
-        public bool IsInvincible => _invincibilityDurationTime > InvincibilityDurationTimeMin;
+        public bool IsInvincible => _invincibilityDurationTime != InvincibilityDurationTimeMin;
 
         public override void OnStartLocalPlayer()
         {
