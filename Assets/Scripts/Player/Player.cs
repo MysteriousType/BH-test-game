@@ -8,6 +8,8 @@
     [RequireComponent(typeof(CapsuleCollider))]
     public class Player : NetworkBehaviour
     {
+        private const float NoDashHitDurationTime = 0f;
+
         [Header("Mesh")]
         [SerializeField]
         private MeshRenderer _playerMeshRenderer;
@@ -30,10 +32,16 @@
         private PlayerCamera _playerCamera;
         private Material _playerMeshMaterial;
 
+        private float _dashHitDurationTime;
+
         [Command(requiresAuthority = false)]
-        public void CmdHitByDash()
+        public void CmdHitByDash(float effectDuration)
         {
-            _playerColor = Color.red;
+            if (!HasDashHitDurationTime)
+            {
+                _playerColor = Color.red;
+                _dashHitDurationTime = Time.time + effectDuration;
+            }
         }
 
         public override void OnStartLocalPlayer()
@@ -60,10 +68,17 @@
 
         private void Update()
         {
-            if (isLocalPlayer)
+            if (!isLocalPlayer)
             {
-                _playerMovement.Update();
-                _playerCamera?.Update();
+                return;
+            }
+
+            _playerMovement.Update();
+            _playerCamera?.Update();
+
+            if (HasDashHitDurationTime && Time.time > _dashHitDurationTime)
+            {
+                CmdDashHitExpired();
             }
         }
 
@@ -84,8 +99,17 @@
         {
             if (isLocalPlayer && _playerMovement.IsDashing && collision.gameObject.TryGetComponent(out Player player))
             {
-                player.CmdHitByDash();
+                player.CmdHitByDash(_playerData.DashHitDurationTime);
             }
+        }
+
+        private bool HasDashHitDurationTime => _dashHitDurationTime > NoDashHitDurationTime;
+
+        [Command]
+        private void CmdDashHitExpired()
+        {
+            _playerColor = Color.white;
+            _dashHitDurationTime = NoDashHitDurationTime;
         }
 
         private void OnColorChanged(Color oldValue, Color newValue)
