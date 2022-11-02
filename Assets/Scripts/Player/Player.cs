@@ -44,10 +44,10 @@
         private float _invincibilityDurationTime;
 
         [Command(requiresAuthority = false)]
-        public void CmdHit(float effectDuration)
+        public void CmdHit(float invincibilityEffectDuration)
         {
             _playerColor = Color.red;
-            _invincibilityDurationTime = Time.time + effectDuration;
+            _invincibilityDurationTime = Time.time + invincibilityEffectDuration;
         }
 
         public bool IsInvincible => _invincibilityDurationTime > InvincibilityDurationTimeMin;
@@ -110,7 +110,7 @@
 
             if (canDash && collision.gameObject.TryGetComponent(out Player hitPlayer) && !hitPlayer.IsInvincible)
             {
-                hitPlayer.CmdHit(_playerData.DashHitDurationTime);
+                hitPlayer.CmdHit(_playerData.DashInvincibilityTime);
                 CmdIncreaseScore();
             }
         }
