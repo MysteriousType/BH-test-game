@@ -167,7 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  _playerCameraTransform: {fileID: 0}
+  _playerCameraTransform: {fileID: 7810761221147261288}
   _playerCameraHolderTransform: {fileID: 7810761221147261288}
   _playerData: {fileID: 11400000, guid: af427920cefdf9b49864e13819fe77a1, type: 2}
   _playerCameraData: {fileID: 11400000, guid: 51db04b7c824c8e42b572dfa2d90cfa4, type: 2}
