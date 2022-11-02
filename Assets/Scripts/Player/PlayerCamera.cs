@@ -27,7 +27,7 @@
             DefaultCameraPosition = playerCameraTransform.localPosition;
             DefaultCameraPositionDistance = Vector3.Distance(playerCameraTransform.position, playerCameraHolderTransform.position);
 
-            _playerRotation.y = PlayerTransform.eulerAngles.y;
+            _playerRotation.y = playerTransform.eulerAngles.y;
 
             SetupCursor();
         }
