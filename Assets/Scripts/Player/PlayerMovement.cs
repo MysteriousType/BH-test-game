@@ -119,7 +119,6 @@ namespace Assets.Scripts.Player
 
                 if (_dashingPassedDistance >= _playerData.DashDistance || passedDistance < 0.001f)
                 {
-                    _dashingPassedDistance = 0f;
                     IsDashing = false;
                 }
             }
@@ -169,11 +168,19 @@ namespace Assets.Scripts.Player
             get => _isDashing;
             set
             {
-                if (_isDashing != value)
+                if (_isDashing == value)
                 {
-                    _playerRigidbody.useGravity = !value;
-                    _isDashing = value;
+                    return;
                 }
+
+                if (!value)
+                {
+                    _dashingPassedDistance = 0f;
+                    _playerRigidbody.velocity = Vector3.zero;
+                }
+
+                _playerRigidbody.useGravity = !value;
+                _isDashing = value;
             }
         }
 
