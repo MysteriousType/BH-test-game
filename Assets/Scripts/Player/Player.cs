@@ -76,18 +76,19 @@
 
         private void Update()
         {
-            if (!isLocalPlayer)
-            {
-                _playerScoreTextHolderTransform.LookAt(Camera.main.transform);
-                return;
-            }
-
-            _playerMovement.Update();
-            _playerCamera?.Update();
-
             if (IsInvincible && Time.time > _invincibilityDurationTime)
             {
                 CmdExpireInvincibility();
+            }
+
+            if (isLocalPlayer)
+            {
+                _playerMovement.Update();
+                _playerCamera?.Update();
+            }
+            else
+            {
+                _playerScoreTextHolderTransform.LookAt(Camera.main.transform);
             }
         }
 
@@ -115,7 +116,7 @@
             }
         }
 
-        [Command]
+        [Command(requiresAuthority = false)]
         private void CmdExpireInvincibility()
         {
             _playerColor = Color.white;
