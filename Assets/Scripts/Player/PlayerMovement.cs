@@ -32,6 +32,7 @@ namespace Assets.Scripts.Player
         private bool _isGrounded;
         private Vector3 _groundNormal;
         private Vector3 _previousPosition;
+        private Vector3 _dashingDirection;
         private float _dashingDistance;
 
         public override void OnStartLocalPlayer()
@@ -67,12 +68,6 @@ namespace Assets.Scripts.Player
             }
 
             CheckDashing();
-
-            if (_isDashing)
-            {
-                return;
-            }
-
             CheckGround();
         }
 
@@ -89,6 +84,11 @@ namespace Assets.Scripts.Player
 
         private void CheckGround()
         {
+            if (_isDashing)
+            {
+                return;
+            }
+
             float distance = _playerCapsuleCollider.height * 0.5f + _playerData.GroundCheckDistance;
             float radius = _playerCapsuleCollider.radius - _playerData.GroundCheckRadiusReduction;
             float slopeAngle = 1f - _playerData.SlopeAngleMax;
@@ -109,11 +109,13 @@ namespace Assets.Scripts.Player
 
         private void CheckDashing()
         {
+            Vector3 movementDirection = MoveDirectionNormalized;
             bool wasDashing = _isDashing;
-            _isDashing = _isDashing || (!_isDashing && PlayerInput.Dash);
+            _isDashing = _isDashing || (!_isDashing && PlayerInput.Dash && movementDirection != Vector3.zero);
 
             if (!wasDashing && _isDashing)
             {
+                _dashingDirection = movementDirection;
                 _playerRigidbody.useGravity = false;
                 _playerRigidbody.velocity = Vector3.zero;
             }
@@ -147,14 +149,17 @@ namespace Assets.Scripts.Player
         private void Move()
         {
             float speed;
+            Vector3 movementDirection;
 
             if (_isDashing)
             {
                 speed = _playerData.DashSpeed;
+                movementDirection = _dashingDirection;
             }
             else
             {
                 speed = _playerData.WalkSpeed;
+                movementDirection = MoveDirectionNormalized;
 
                 if (!_isGrounded)
                 {
@@ -162,7 +167,7 @@ namespace Assets.Scripts.Player
                 }
             }
 
-            Vector3 force = MoveDirectionNormalized * speed;
+            Vector3 force = movementDirection * speed;
             Move(force);
         }
 
