@@ -16,6 +16,8 @@ MonoBehaviour:
   _airDrag: 2.25
   _walkSpeed: 56
   _airSpeedMultiplier: 0.4
+  _dashSpeed: 325
+  _dashDistance: 10
   _groundCheckDistance: 0.2
   _groundCheckRadiusReduction: 0.1
   _slopeAngleMax: 0.385
