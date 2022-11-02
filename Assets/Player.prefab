@@ -107,7 +107,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1949065486613116018}
   m_Layer: 0
-  m_Name: Score
+  m_Name: ScoreHolder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -297,6 +297,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
+  _playerScoreText: {fileID: 6621485018625506361}
+  _playerScoreTextHolderTransform: {fileID: 1949065486613116018}
   _playerMeshRenderer: {fileID: 7810761222979223752}
   _playerCameraHolderTransform: {fileID: 7810761221147261288}
   _playerData: {fileID: 11400000, guid: af427920cefdf9b49864e13819fe77a1, type: 2}
