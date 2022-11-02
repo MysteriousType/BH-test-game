@@ -35,10 +35,10 @@
         private float _dashHitDurationTime;
 
         [Command(requiresAuthority = false)]
-        public void CmdHitByDash()
+        public void CmdHitByDash(float effectDuration)
         {
             _playerColor = Color.red;
-            _dashHitDurationTime = Time.time + _playerData.DashHitDurationTime;
+            _dashHitDurationTime = Time.time + effectDuration;
         }
 
         public override void OnStartLocalPlayer()
@@ -96,7 +96,7 @@
         {
             if (isLocalPlayer && _playerMovement.IsDashing && collision.gameObject.TryGetComponent(out Player player))
             {
-                player.CmdHitByDash();
+                player.CmdHitByDash(_playerData.DashHitDurationTime);
             }
         }
 
