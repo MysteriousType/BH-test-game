@@ -20,6 +20,7 @@
         private PlayerCameraData _playerCameraData;
 
         private PlayerMovement _playerMovement;
+        private PlayerCamera _playerCamera;
 
         public override void OnStartLocalPlayer()
         {
@@ -31,13 +32,7 @@
                 return;
             }
 
-            if (!camera.TryGetComponent(out PlayerCamera playerCamera))
-            {
-                Debug.LogError($"{nameof(PlayerCamera)} component isn't set to the MainCamera!");
-                return;
-            }
-
-            playerCamera.SetupCamera(transform, _playerCameraHolderTransform, _playerCameraData);
+            _playerCamera = new PlayerCamera(_playerCameraData, _playerCameraHolderTransform, transform, camera.transform);
         }
 
         private void Start()
@@ -54,6 +49,8 @@
             {
                 _playerMovement.Update();
             }
+
+            _playerCamera?.Update();
         }
 
         private void FixedUpdate()
@@ -62,6 +59,11 @@
             {
                 _playerMovement.FixedUpdate();
             }
+        }
+
+        private void LateUpdate()
+        {
+            _playerCamera?.LateUpdate();
         }
     }
 }
