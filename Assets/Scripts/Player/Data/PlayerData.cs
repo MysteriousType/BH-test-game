@@ -27,6 +27,9 @@
         [SerializeField]
         private float _dashDistance = 10f;
 
+        [SerializeField]
+        private float _dashHitDuration = 3f;
+
         [Header("Ground Detection")]
         [SerializeField]
         private float _groundCheckDistance = 0.2f;
@@ -50,6 +53,8 @@
         public float DashSpeed => _dashSpeed;
 
         public float DashDistance => _dashDistance;
+
+        public float DashHitDuration => _dashHitDuration;
 
         public float AirSpeedMultiplier => _airSpeedMultiplier;
 
