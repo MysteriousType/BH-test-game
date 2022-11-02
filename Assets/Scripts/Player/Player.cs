@@ -23,12 +23,16 @@
         [SerializeField]
         private PlayerCameraData _playerCameraData;
 
+        [SyncVar(hook = nameof(OnColorChanged))]
+        private Color _playerColor;
+
         private PlayerMovement _playerMovement;
         private PlayerCamera _playerCamera;
+        private Material _playerMeshMaterial;
 
         public void HitByDash()
         {
-            _playerMeshRenderer.material.color = Color.red;
+            _playerColor = Color.red;
         }
 
         public override void OnStartLocalPlayer()
@@ -50,6 +54,11 @@
             CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
 
             _playerMovement = new PlayerMovement(capsuleCollider, rigidbody, _playerData, _playerCameraHolderTransform, transform);
+        }
+
+        private void OnDestroy()
+        {
+            Destroy(_playerMeshMaterial);
         }
 
         private void Update()
@@ -75,12 +84,23 @@
             _playerCamera?.LateUpdate();
         }
 
+        [ServerCallback]
         private void OnCollisionEnter(Collision collision)
         {
             if (_playerMovement.IsDashing && collision.gameObject.TryGetComponent(out Player player))
             {
                 player.HitByDash();
             }
+        }
+
+        private void OnColorChanged(Color oldValue, Color newValue)
+        {
+            if (_playerMeshMaterial == null)
+            {
+                _playerMeshMaterial = _playerMeshRenderer.material;
+            }
+
+            _playerMeshMaterial.color = newValue;
         }
     }
 }
