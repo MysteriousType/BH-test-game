@@ -31,7 +31,7 @@ namespace Assets.Scripts.Player
         private bool _isGrounded;
         private Vector3 _groundNormal;
         private Vector3 _previousPosition;
-        private float _dashingDistance;
+        private float _dashingPassedDistance;
 
         public override void OnStartLocalPlayer()
         {
@@ -115,11 +115,11 @@ namespace Assets.Scripts.Player
             if (IsDashing)
             {
                 float passedDistance = Vector3.Distance(transform.position, _previousPosition);
-                _dashingDistance += passedDistance;
+                _dashingPassedDistance += passedDistance;
 
-                if (_dashingDistance >= _playerData.DashDistance || passedDistance <= 0.001f)
+                if (_dashingPassedDistance >= _playerData.DashDistance || passedDistance <= 0.001f)
                 {
-                    _dashingDistance = 0f;
+                    _dashingPassedDistance = 0f;
                     IsDashing = false;
                 }
             }
