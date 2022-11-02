@@ -66,13 +66,14 @@ namespace Assets.Scripts.Player
                 return;
             }
 
+            CheckDashing();
+
             if (_isDashing)
             {
                 return;
             }
 
             CheckGround();
-            CheckDashing();
         }
 
         private void FixedUpdate()
@@ -108,7 +109,14 @@ namespace Assets.Scripts.Player
 
         private void CheckDashing()
         {
+            bool wasDashing = _isDashing;
             _isDashing = _isDashing || (!_isDashing && PlayerInput.Dash);
+
+            if (!wasDashing && _isDashing)
+            {
+                _playerRigidbody.useGravity = false;
+                _playerRigidbody.velocity = Vector3.zero;
+            }
 
             if (_isDashing)
             {
@@ -118,6 +126,8 @@ namespace Assets.Scripts.Player
                 {
                     _isDashing = false;
                     _dashingDistance = 0f;
+                    _playerRigidbody.useGravity = true;
+                    _playerRigidbody.velocity = Vector3.zero;
                 }
             }
 
