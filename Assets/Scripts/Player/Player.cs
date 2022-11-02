@@ -10,9 +10,6 @@
     {
         [Header("Transforms")]
         [SerializeField]
-        private Transform _playerCameraTransform;
-
-        [SerializeField]
         private Transform _playerCameraHolderTransform;
 
         [Header("Data")]
@@ -48,7 +45,7 @@
             Rigidbody rigidbody = GetComponent<Rigidbody>();
             CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
 
-            _playerMovement = new PlayerMovement(capsuleCollider, rigidbody, _playerData, _playerCameraTransform, transform);
+            _playerMovement = new PlayerMovement(capsuleCollider, rigidbody, _playerData, _playerCameraHolderTransform, transform);
         }
 
         private void Update()
