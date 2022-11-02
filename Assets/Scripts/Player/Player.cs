@@ -63,9 +63,8 @@
             if (isLocalPlayer)
             {
                 _playerMovement.Update();
+                _playerCamera?.Update();
             }
-
-            _playerCamera?.Update();
         }
 
         private void FixedUpdate()
