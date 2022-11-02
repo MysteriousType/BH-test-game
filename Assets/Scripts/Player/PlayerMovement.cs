@@ -117,7 +117,7 @@ namespace Assets.Scripts.Player
                 float passedDistance = Vector3.Distance(transform.position, _previousPosition);
                 _dashingPassedDistance += passedDistance;
 
-                if (_dashingPassedDistance >= _playerData.DashDistance || passedDistance <= 0.001f)
+                if (_dashingPassedDistance >= _playerData.DashDistance || passedDistance < 0.001f)
                 {
                     _dashingPassedDistance = 0f;
                     IsDashing = false;
