@@ -10,6 +10,10 @@
     {
         [Header("Transforms")]
         [SerializeField]
+        private MeshRenderer _playerMeshRenderer;
+
+        [Header("Transforms")]
+        [SerializeField]
         private Transform _playerCameraHolderTransform;
 
         [Header("Data")]
@@ -21,6 +25,11 @@
 
         private PlayerMovement _playerMovement;
         private PlayerCamera _playerCamera;
+
+        public void HitByDash()
+        {
+            _playerMeshRenderer.material.color = Color.red;
+        }
 
         public override void OnStartLocalPlayer()
         {
@@ -64,6 +73,14 @@
         private void LateUpdate()
         {
             _playerCamera?.LateUpdate();
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (collision.gameObject.TryGetComponent(out Player player))
+            {
+                player.HitByDash();
+            }
         }
     }
 }
