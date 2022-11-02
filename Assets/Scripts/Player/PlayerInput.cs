@@ -8,7 +8,7 @@
         private const string VerticalAxis = "Vertical";
         private const string MouseX = "Mouse X";
         private const string MouseY = "Mouse Y";
-        private const int LeftMouseButtonIndex = 1;
+        private const int LeftMouseButtonIndex = 0;
 
         public static Vector2 MouseAxis
         {
