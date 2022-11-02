@@ -8,6 +8,7 @@
         private const string VerticalAxis = "Vertical";
         private const string MouseX = "Mouse X";
         private const string MouseY = "Mouse Y";
+        private const int LeftMouseButtonIndex = 0;
 
         public static Vector2 MouseAxis
         {
@@ -31,5 +32,7 @@
                 return new Vector2(horizontal, vertical).normalized;
             }
         }
+
+        public static bool Dash => Input.GetMouseButton(LeftMouseButtonIndex);
     }
 }

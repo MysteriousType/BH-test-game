@@ -12,13 +12,20 @@
         [SerializeField]
         private float _airDrag = 2f;
 
-        [Header("Speed")]
+        [Header("Walk Speed")]
         [SerializeField]
         private float _walkSpeed = 56f;
 
         [SerializeField]
         [Range(0f, 1f)]
         private float _airSpeedMultiplier = 0.4f;
+
+        [Header("Dashing")]
+        [SerializeField]
+        private float _dashSpeed = 350f;
+
+        [SerializeField]
+        private float _dashDistance = 10f;
 
         [Header("Ground Detection")]
         [SerializeField]
@@ -39,6 +46,10 @@
         public float AirDrag => _airDrag;
 
         public float WalkSpeed => _walkSpeed;
+
+        public float DashSpeed => _dashSpeed;
+
+        public float DashDistance => _dashDistance;
 
         public float AirSpeedMultiplier => _airSpeedMultiplier;
 

@@ -27,8 +27,11 @@ namespace Assets.Scripts.Player
         private Rigidbody _playerRigidbody;
         private CapsuleCollider _playerCapsuleCollider;
 
+        private bool _isDashing;
         private bool _isGrounded;
         private Vector3 _groundNormal;
+        private Vector3 _previousPosition;
+        private float _dashingPassedDistance;
 
         public override void OnStartLocalPlayer()
         {
@@ -62,6 +65,7 @@ namespace Assets.Scripts.Player
                 return;
             }
 
+            CheckDashing();
             CheckGround();
         }
 
@@ -78,6 +82,11 @@ namespace Assets.Scripts.Player
 
         private void CheckGround()
         {
+            if (IsDashing)
+            {
+                return;
+            }
+
             float distance = _playerCapsuleCollider.height * 0.5f + _playerData.GroundCheckDistance;
             float radius = _playerCapsuleCollider.radius - _playerData.GroundCheckRadiusReduction;
             float slopeAngle = 1f - _playerData.SlopeAngleMax;
@@ -96,9 +105,30 @@ namespace Assets.Scripts.Player
             }
         }
 
+        private void CheckDashing()
+        {
+            if (PlayerInput.Dash)
+            {
+                IsDashing = true;
+            }
+
+            if (IsDashing)
+            {
+                float passedDistance = Vector3.Distance(transform.position, _previousPosition);
+                _dashingPassedDistance += passedDistance;
+
+                if (_dashingPassedDistance >= _playerData.DashDistance || passedDistance < 0.001f)
+                {
+                    IsDashing = false;
+                }
+            }
+
+            _previousPosition = transform.position;
+        }
+
         private void MoveOnSlope()
         {
-            if (IsOnSlope)
+            if (IsOnSlope && !IsDashing)
             {
                 Vector3 slipDirection = _groundNormal + Physics.gravity.normalized;
                 Vector3 antiSlipVelocity = slipDirection * Physics.gravity.magnitude * -1f;
@@ -108,19 +138,51 @@ namespace Assets.Scripts.Player
 
         private void Move()
         {
-            Vector3 force = MoveDirectionNormalized * _playerData.WalkSpeed;
+            float speed;
+            Vector3 movementDirection = MoveDirectionNormalized;
 
-            if (!_isGrounded)
+            if (IsDashing)
             {
-                force *= _playerData.AirSpeedMultiplier;
+                speed = _playerData.DashSpeed;
+            }
+            else
+            {
+                speed = _playerData.WalkSpeed;
+
+                if (!_isGrounded)
+                {
+                    speed *= _playerData.AirSpeedMultiplier;
+                }
             }
 
+            Vector3 force = movementDirection * speed;
             Move(force);
         }
 
         private void Move(Vector3 force) => _playerRigidbody.AddForce(force, ForceMode.Acceleration);
 
         private bool IsOnSlope => _groundNormal.y != FlatGroundNormal.y;
+
+        private bool IsDashing
+        {
+            get => _isDashing;
+            set
+            {
+                if (_isDashing == value)
+                {
+                    return;
+                }
+
+                if (!value)
+                {
+                    _dashingPassedDistance = 0f;
+                    _playerRigidbody.velocity = Vector3.zero;
+                }
+
+                _playerRigidbody.useGravity = !value;
+                _isDashing = value;
+            }
+        }
 
         private Vector3 MoveDirectionNormalized
         {
