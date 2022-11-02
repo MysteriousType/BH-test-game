@@ -109,7 +109,6 @@ namespace Assets.Scripts.Player
         private void CheckDashing()
         {
             _isDashing = _isDashing || (!_isDashing && PlayerInput.Dash);
-            _previousPosition = transform.position;
 
             if (_isDashing)
             {
@@ -121,6 +120,8 @@ namespace Assets.Scripts.Player
                     _dashingDistance = 0f;
                 }
             }
+
+            _previousPosition = transform.position;
         }
 
         private void MoveOnSlope()
