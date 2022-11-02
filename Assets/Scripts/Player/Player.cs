@@ -8,7 +8,7 @@
     [RequireComponent(typeof(CapsuleCollider))]
     public class Player : NetworkBehaviour
     {
-        private const float DashHitDurationTimeMin = 0f;
+        private const float NoDashHitDurationTime = 0f;
 
         [Header("Mesh")]
         [SerializeField]
@@ -37,8 +37,11 @@
         [Command(requiresAuthority = false)]
         public void CmdHitByDash(float effectDuration)
         {
-            _playerColor = Color.red;
-            _dashHitDurationTime = Time.time + effectDuration;
+            if (!HasDashHitDurationTime)
+            {
+                _playerColor = Color.red;
+                _dashHitDurationTime = Time.time + effectDuration;
+            }
         }
 
         public override void OnStartLocalPlayer()
@@ -73,7 +76,7 @@
             _playerMovement.Update();
             _playerCamera?.Update();
 
-            if (_dashHitDurationTime > DashHitDurationTimeMin && Time.time > _dashHitDurationTime)
+            if (HasDashHitDurationTime && Time.time > _dashHitDurationTime)
             {
                 CmdDashHitExpired();
             }
@@ -100,11 +103,13 @@
             }
         }
 
+        private bool HasDashHitDurationTime => _dashHitDurationTime > NoDashHitDurationTime;
+
         [Command]
         private void CmdDashHitExpired()
         {
             _playerColor = Color.white;
-            _dashHitDurationTime = DashHitDurationTimeMin;
+            _dashHitDurationTime = NoDashHitDurationTime;
         }
 
         private void OnColorChanged(Color oldValue, Color newValue)
