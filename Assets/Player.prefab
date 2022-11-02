@@ -131,8 +131,8 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 1
-  sendRate: 30
-  bufferTimeMultiplier: 2
+  sendRate: 3
+  bufferTimeMultiplier: 3
   bufferSizeLimit: 64
   catchupNegativeThreshold: -1
   catchupPositiveThreshold: 1
@@ -150,7 +150,7 @@ MonoBehaviour:
   syncPosition: 1
   syncRotation: 1
   syncScale: 0
-  showGizmos: 0
+  showGizmos: 1
   showOverlay: 0
   overlayColor: {r: 0, g: 0, b: 0, a: 0.5}
 --- !u!114 &6860661991172636151
@@ -167,7 +167,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   syncMode: 0
   syncInterval: 0.1
-  _playerCameraTransform: {fileID: 7810761221147261288}
+  _playerMeshRenderer: {fileID: 7810761222979223752}
   _playerCameraHolderTransform: {fileID: 7810761221147261288}
   _playerData: {fileID: 11400000, guid: af427920cefdf9b49864e13819fe77a1, type: 2}
   _playerCameraData: {fileID: 11400000, guid: 51db04b7c824c8e42b572dfa2d90cfa4, type: 2}

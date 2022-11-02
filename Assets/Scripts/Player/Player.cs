@@ -8,6 +8,10 @@
     [RequireComponent(typeof(CapsuleCollider))]
     public class Player : NetworkBehaviour
     {
+        [Header("Mesh")]
+        [SerializeField]
+        private MeshRenderer _playerMeshRenderer;
+
         [Header("Transforms")]
         [SerializeField]
         private Transform _playerCameraHolderTransform;
@@ -19,8 +23,18 @@
         [SerializeField]
         private PlayerCameraData _playerCameraData;
 
+        [SyncVar(hook = nameof(OnColorChanged))]
+        private Color _playerColor;
+
         private PlayerMovement _playerMovement;
         private PlayerCamera _playerCamera;
+        private Material _playerMeshMaterial;
+
+        [Command(requiresAuthority = false)]
+        public void CmdHitByDash()
+        {
+            _playerColor = Color.red;
+        }
 
         public override void OnStartLocalPlayer()
         {
@@ -32,15 +46,16 @@
                 return;
             }
 
-            _playerCamera = new PlayerCamera(_playerCameraData, _playerCameraHolderTransform, transform, camera.transform);
-        }
-
-        private void Start()
-        {
             Rigidbody rigidbody = GetComponent<Rigidbody>();
             CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
 
             _playerMovement = new PlayerMovement(capsuleCollider, rigidbody, _playerData, _playerCameraHolderTransform, transform);
+            _playerCamera = new PlayerCamera(_playerCameraData, _playerCameraHolderTransform, transform, camera.transform);
+        }
+
+        private void OnDestroy()
+        {
+            Destroy(_playerMeshMaterial);
         }
 
         private void Update()
@@ -48,9 +63,8 @@
             if (isLocalPlayer)
             {
                 _playerMovement.Update();
+                _playerCamera?.Update();
             }
-
-            _playerCamera?.Update();
         }
 
         private void FixedUpdate()
@@ -64,6 +78,25 @@
         private void LateUpdate()
         {
             _playerCamera?.LateUpdate();
+        }
+
+        private void OnCollisionEnter(Collision collision)
+        {
+            if (isLocalPlayer && _playerMovement.IsDashing && collision.gameObject.TryGetComponent(out Player player))
+            {
+                player.CmdHitByDash();
+            }
+        }
+
+        private void OnColorChanged(Color oldValue, Color newValue)
+        {
+            if (_playerMeshMaterial == null)
+            {
+                _playerMeshMaterial = new Material(_playerMeshRenderer.material);
+            }
+
+            _playerMeshMaterial.color = _playerColor;
+            _playerMeshRenderer.material = _playerMeshMaterial;
         }
     }
 }
