@@ -107,7 +107,7 @@ namespace Assets.Scripts.Player
 
         private void CheckDashing()
         {
-            if (!IsDashing && PlayerInput.Dash)
+            if (PlayerInput.Dash)
             {
                 IsDashing = true;
             }
