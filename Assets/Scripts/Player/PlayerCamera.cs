@@ -21,11 +21,11 @@
             PlayerTransform = playerTransform;
 
             PlayerCameraTransform = playerCameraTransform;
-            PlayerCameraTransform.parent = PlayerCameraHolderTransform;
-            PlayerCameraTransform.localPosition = PlayerCameraData.LocalPosition;
+            PlayerCameraTransform.parent = playerCameraHolderTransform;
+            PlayerCameraTransform.localPosition = playerCameraData.LocalPosition;
 
             DefaultCameraPosition = playerCameraTransform.localPosition;
-            DefaultCameraPositionDistance = Vector3.Distance(playerCameraTransform.position, PlayerCameraHolderTransform.position);
+            DefaultCameraPositionDistance = Vector3.Distance(playerCameraTransform.position, playerCameraHolderTransform.position);
 
             _playerRotation.y = PlayerTransform.eulerAngles.y;
 
