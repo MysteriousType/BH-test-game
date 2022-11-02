@@ -8,7 +8,7 @@
     [RequireComponent(typeof(CapsuleCollider))]
     public class Player : NetworkBehaviour
     {
-        [Header("Transforms")]
+        [Header("Mesh")]
         [SerializeField]
         private MeshRenderer _playerMeshRenderer;
 
