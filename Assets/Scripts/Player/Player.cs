@@ -22,8 +22,7 @@
         [SerializeField]
         private PlayerCameraData _playerCameraData;
 
-        private Rigidbody _playerRigidbody;
-        private CapsuleCollider _playerCapsuleCollider;
+        private PlayerMovement _playerMovement;
 
         public override void OnStartLocalPlayer()
         {
@@ -46,8 +45,26 @@
 
         private void Start()
         {
-            _playerRigidbody = GetComponent<Rigidbody>();
-            _playerCapsuleCollider = GetComponent<CapsuleCollider>();
+            Rigidbody rigidbody = GetComponent<Rigidbody>();
+            CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
+
+            _playerMovement = new PlayerMovement(capsuleCollider, rigidbody, _playerData, _playerCameraTransform, transform);
+        }
+
+        private void Update()
+        {
+            if (isLocalPlayer)
+            {
+                _playerMovement.Update();
+            }
+        }
+
+        private void FixedUpdate()
+        {
+            if (isLocalPlayer)
+            {
+                _playerMovement.FixedUpdate();
+            }
         }
     }
 }
