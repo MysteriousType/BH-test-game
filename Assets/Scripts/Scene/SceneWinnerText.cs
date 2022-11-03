@@ -11,11 +11,13 @@
         private Text _winnerCanvasText;
 
         [SyncVar(hook = nameof(OnStatusTextChanged))]
-        private string _text;
+        private string _text = string.Empty;
+
+        public void ResetText() => _text = string.Empty;
 
         public void SetText(string text)
         {
-            if (string.IsNullOrWhiteSpace(_text))
+            if (_text == string.Empty)
             {
                 _text = text;
             }

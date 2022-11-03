@@ -53,14 +53,14 @@
         {
             _playerScore = ScoreDefault;
             CmdExpireInvincibility();
+            ResetWinnerText();
         }
 
         [ClientRpc]
         public void RpcRespawn()
         {
-            int index = Random.Range(0, NetworkManager.startPositions.Count);
-            transform.position = NetworkManager.startPositions[index].position;
-            SetWinnerText(string.Empty);
+            int startPositionIndex = Random.Range(0, NetworkManager.startPositions.Count);
+            transform.position = NetworkManager.startPositions[startPositionIndex].position;
         }
 
         public bool ReceiveHit(float invincibilityEffectDuration)
@@ -229,6 +229,14 @@
             if (_sceneWinnerText != null)
             {
                 _sceneWinnerText.SetText(text);
+            }
+        }
+
+        private void ResetWinnerText()
+        {
+            if (_sceneWinnerText != null)
+            {
+                _sceneWinnerText.ResetText();
             }
         }
     }
