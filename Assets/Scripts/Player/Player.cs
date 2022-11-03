@@ -81,7 +81,7 @@
 
             if (_scenePlayerRespawn != null)
             {
-                _scenePlayerRespawn.AddPlayer(this);
+                _scenePlayerRespawn.CmdAddPlayer(this);
             }
         }
 
@@ -89,7 +89,7 @@
         {
             if (_scenePlayerRespawn != null)
             {
-                _scenePlayerRespawn.RemovePlayer(this);
+                _scenePlayerRespawn.CmdRemovePlayer(this);
             }
         }
 
@@ -181,7 +181,7 @@
 
                 if (_scenePlayerRespawn != null)
                 {
-                    _scenePlayerRespawn.RespawnAll();
+                    _scenePlayerRespawn.CmdDelayedRespawnAll();
                 }
             }
         }
