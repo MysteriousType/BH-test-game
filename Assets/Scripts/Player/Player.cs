@@ -43,15 +43,6 @@
         private Material _playerMeshMaterial;
         private float _invincibilityDurationTime;
 
-        [Command(requiresAuthority = false)]
-        public void CmdHit(float invincibilityEffectDuration)
-        {
-            _playerColor = Color.red;
-            _invincibilityDurationTime = Time.time + invincibilityEffectDuration;
-        }
-
-        public bool IsInvincible => _invincibilityDurationTime != InvincibilityDurationTimeMin;
-
         public override void OnStartLocalPlayer()
         {
             Camera camera = Camera.main;
@@ -109,12 +100,41 @@
         {
             bool canDash = isLocalPlayer && _playerMovement.IsDashing;
 
-            if (canDash && collision.gameObject.TryGetComponent(out Player hitPlayer) && !hitPlayer.IsInvincible)
+            if (canDash && collision.gameObject.TryGetComponent(out Player hitPlayer))
             {
-                hitPlayer.CmdHit(_playerData.DashInvincibilityTime);
-                CmdIncreaseScore();
+                CmdHit2(_playerData.DashInvincibilityTime, collision.gameObject);
+                //hitPlayer.CmdHit(_playerData.DashInvincibilityTime, GetComponent<NetworkIdentity>());
             }
         }
+
+        public bool Do()
+        {
+            if (!IsInvincible)
+            {
+                _playerColor = Color.red;
+                _invincibilityDurationTime = Time.time + 3f;
+                return true;
+            }
+
+            return false;
+        }
+
+        [Command(requiresAuthority = false)]
+        public void CmdHit2(float invincibilityEffectDuration, GameObject attacked)
+        {
+            if (attacked.TryGetComponent(out Player player) && player.Do())
+            {
+                TargetIncreaseScore2();
+            }
+        }
+
+        [TargetRpc]
+        private void TargetIncreaseScore2()
+        {
+            CmdIncreaseScore();
+        }
+
+        private bool IsInvincible => _invincibilityDurationTime != InvincibilityDurationTimeMin;
 
         [Command(requiresAuthority = false)]
         private void CmdExpireInvincibility()
@@ -123,7 +143,7 @@
             _invincibilityDurationTime = InvincibilityDurationTimeMin;
         }
 
-        [Command]
+        [Command(requiresAuthority = false)]
         private void CmdIncreaseScore()
         {
             _playerScore++;
