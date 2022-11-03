@@ -1,6 +1,7 @@
 ﻿namespace Assets.Scripts.Player
 {
     using Assets.Scripts.Player.Data;
+    using Assets.Scripts.Scene;
     using Mirror;
     using UnityEngine;
 
@@ -8,6 +9,7 @@
     [RequireComponent(typeof(CapsuleCollider))]
     public class Player : NetworkBehaviour
     {
+        private const int ScoreToWin = 1;
         private const float InvincibilityDurationTimeMin = 0f;
 
         [Header("Score Info")]
@@ -36,8 +38,9 @@
         private Color _playerColor;
 
         [SyncVar(hook = nameof(OnScoreChanged))]
-        private float _playerScore;
+        private int _playerScore;
 
+        private SceneWinnerText _sceneWinnerText;
         private PlayerMovement _playerMovement;
         private PlayerCamera _playerCamera;
         private Material _playerMeshMaterial;
@@ -74,6 +77,11 @@
             Vector3 scoreHolderLocalScale = _playerScoreTextHolderTransform.localScale;
             scoreHolderLocalScale.x *= -1f;
             _playerScoreTextHolderTransform.localScale = scoreHolderLocalScale;
+        }
+
+        private void Awake()
+        {
+            _sceneWinnerText = FindObjectOfType<SceneWinnerText>();
         }
 
         private void OnDestroy()
@@ -148,6 +156,11 @@
         private void CmdIncreaseScore()
         {
             _playerScore++;
+
+            if (_sceneWinnerText != null && _playerScore == ScoreToWin)
+            {
+                _sceneWinnerText.SetText($"{gameObject.name} is winner!");
+            }
         }
 
         private void OnColorChanged(Color oldColor, Color newColor)
@@ -161,7 +174,7 @@
             _playerMeshRenderer.material = _playerMeshMaterial;
         }
 
-        private void OnScoreChanged(float oldScore, float newScore)
+        private void OnScoreChanged(int oldScore, int newScore)
         {
             _playerScoreText.text = _playerScore.ToString();
         }
