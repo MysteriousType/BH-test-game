@@ -1022,8 +1022,8 @@ MonoBehaviour:
   MaxRetransmit: 40
   NonAlloc: 1
   MaximizeSendReceiveBuffersToOSLimit: 1
-  ReliableMaxMessageSize: 0
-  UnreliableMaxMessageSize: 0
+  ReliableMaxMessageSize: 298449
+  UnreliableMaxMessageSize: 1199
   debugLog: 0
   statisticsGUI: 0
   statisticsLog: 0
