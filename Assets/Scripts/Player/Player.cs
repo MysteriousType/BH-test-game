@@ -9,7 +9,8 @@
     [RequireComponent(typeof(CapsuleCollider))]
     public class Player : NetworkBehaviour
     {
-        private const int ScoreToWin = 1;
+        private const int ScoreDefault = 0;
+        private const int ScoreToWin = 2;
         private const float InvincibilityDurationTimeMin = 0f;
 
         [Header("Score Info")]
@@ -40,11 +41,26 @@
         [SyncVar(hook = nameof(OnScoreChanged))]
         private int _playerScore;
 
+        private ScenePlayerRespawn _scenePlayerRespawn;
         private SceneWinnerText _sceneWinnerText;
         private PlayerMovement _playerMovement;
         private PlayerCamera _playerCamera;
         private Material _playerMeshMaterial;
         private float _invincibilityDurationTime;
+
+        [Command(requiresAuthority = false)]
+        public void CmdRespawn()
+        {
+            _playerScore = ScoreDefault;
+            CmdExpireInvincibility();
+        }
+
+        [ClientRpc]
+        public void RpcRespawn()
+        {
+            int index = Random.Range(0, NetworkManager.startPositions.Count);
+            transform.position = NetworkManager.startPositions[index].position;
+        }
 
         public bool ReceiveHit(float invincibilityEffectDuration)
         {
@@ -60,28 +76,27 @@
 
         public override void OnStartLocalPlayer()
         {
-            Camera camera = Camera.main;
+            SetupPlayer();
+            SetupScoreHolder();
 
-            if (camera == null)
+            if (_scenePlayerRespawn != null)
             {
-                Debug.LogError($"MainCamera cannot be found!");
-                return;
+                _scenePlayerRespawn.AddPlayer(this);
             }
+        }
 
-            Rigidbody rigidbody = GetComponent<Rigidbody>();
-            CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
-
-            _playerMovement = new PlayerMovement(capsuleCollider, rigidbody, _playerData, _playerCameraHolderTransform, transform);
-            _playerCamera = new PlayerCamera(_playerCameraData, _playerCameraHolderTransform, transform, camera.transform);
-
-            Vector3 scoreHolderLocalScale = _playerScoreTextHolderTransform.localScale;
-            scoreHolderLocalScale.x *= -1f;
-            _playerScoreTextHolderTransform.localScale = scoreHolderLocalScale;
+        public override void OnStopLocalPlayer()
+        {
+            if (_scenePlayerRespawn != null)
+            {
+                _scenePlayerRespawn.RemovePlayer(this);
+            }
         }
 
         private void Awake()
         {
             _sceneWinnerText = FindObjectOfType<SceneWinnerText>();
+            _scenePlayerRespawn = FindObjectOfType<ScenePlayerRespawn>();
         }
 
         private void OnDestroy()
@@ -157,9 +172,17 @@
         {
             _playerScore++;
 
-            if (_sceneWinnerText != null && _playerScore == ScoreToWin)
+            if (_playerScore == ScoreToWin)
             {
-                _sceneWinnerText.SetText($"{gameObject.name} is winner!");
+                if (_sceneWinnerText != null)
+                {
+                    _sceneWinnerText.SetText($"{gameObject.name} is winner!");
+                }
+
+                if (_scenePlayerRespawn != null)
+                {
+                    _scenePlayerRespawn.RespawnAll();
+                }
             }
         }
 
@@ -177,6 +200,30 @@
         private void OnScoreChanged(int oldScore, int newScore)
         {
             _playerScoreText.text = _playerScore.ToString();
+        }
+
+        private void SetupPlayer()
+        {
+            Camera camera = Camera.main;
+
+            if (camera == null)
+            {
+                Debug.LogError($"MainCamera cannot be found!");
+                return;
+            }
+
+            Rigidbody rigidbody = GetComponent<Rigidbody>();
+            CapsuleCollider capsuleCollider = GetComponent<CapsuleCollider>();
+
+            _playerMovement = new PlayerMovement(capsuleCollider, rigidbody, _playerData, _playerCameraHolderTransform, transform);
+            _playerCamera = new PlayerCamera(_playerCameraData, _playerCameraHolderTransform, transform, camera.transform);
+        }
+
+        private void SetupScoreHolder()
+        {
+            Vector3 scoreHolderLocalScale = _playerScoreTextHolderTransform.localScale;
+            scoreHolderLocalScale.x *= -1f;
+            _playerScoreTextHolderTransform.localScale = scoreHolderLocalScale;
         }
     }
 }
