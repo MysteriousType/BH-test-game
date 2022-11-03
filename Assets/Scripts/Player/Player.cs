@@ -10,7 +10,7 @@
     public class Player : NetworkBehaviour
     {
         private const int ScoreDefault = 0;
-        private const int ScoreToWin = 2;
+        private const int ScoreToWin = 3;
         private const float InvincibilityDurationTimeMin = 0f;
 
         [Header("Score Info")]
