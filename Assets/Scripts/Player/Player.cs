@@ -120,6 +120,8 @@
             }
         }
 
+        private bool IsInvincible => _invincibilityDurationTime != InvincibilityDurationTimeMin;
+
         [Command(requiresAuthority = false)]
         private void CmdHit(Player hitPlayer, float invincibilityEffectDuration)
         {
@@ -134,8 +136,6 @@
         {
             CmdIncreaseScore();
         }
-
-        private bool IsInvincible => _invincibilityDurationTime != InvincibilityDurationTimeMin;
 
         [Command(requiresAuthority = false)]
         private void CmdExpireInvincibility()
