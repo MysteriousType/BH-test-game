@@ -13,7 +13,13 @@
         [SyncVar(hook = nameof(OnStatusTextChanged))]
         private string _text;
 
-        public void SetText(string text) => _text = text;
+        public void SetText(string text)
+        {
+            if (string.IsNullOrWhiteSpace(_text))
+            {
+                _text = text;
+            }
+        }
 
         private void OnStatusTextChanged(string oldText, string newText)
         {
