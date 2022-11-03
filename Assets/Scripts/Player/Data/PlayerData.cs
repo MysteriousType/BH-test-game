@@ -28,7 +28,7 @@
         private float _dashDistance = 10f;
 
         [SerializeField]
-        private float _dashHitDurationTime = 3f;
+        private float _dashInvincibilityTime = 3f;
 
         [Header("Ground Detection")]
         [SerializeField]
@@ -54,7 +54,7 @@
 
         public float DashDistance => _dashDistance;
 
-        public float DashHitDurationTime => _dashHitDurationTime;
+        public float DashInvincibilityTime => _dashInvincibilityTime;
 
         public float AirSpeedMultiplier => _airSpeedMultiplier;
 

@@ -18,6 +18,7 @@ MonoBehaviour:
   _airSpeedMultiplier: 0.4
   _dashSpeed: 400
   _dashDistance: 8
+  _dashInvincibilityTime: 3
   _groundCheckDistance: 0.2
   _groundCheckRadiusReduction: 0.1
   _slopeAngleMax: 0.385

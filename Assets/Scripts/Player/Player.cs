@@ -8,7 +8,14 @@
     [RequireComponent(typeof(CapsuleCollider))]
     public class Player : NetworkBehaviour
     {
-        private const float NoDashHitDurationTime = 0f;
+        private const float InvincibilityDurationTimeMin = 0f;
+
+        [Header("Score Info")]
+        [SerializeField]
+        public TextMesh _playerScoreText;
+
+        [SerializeField]
+        public Transform _playerScoreTextHolderTransform;
 
         [Header("Mesh")]
         [SerializeField]
@@ -28,20 +35,24 @@
         [SyncVar(hook = nameof(OnColorChanged))]
         private Color _playerColor;
 
+        [SyncVar(hook = nameof(OnScoreChanged))]
+        private float _playerScore;
+
         private PlayerMovement _playerMovement;
         private PlayerCamera _playerCamera;
         private Material _playerMeshMaterial;
+        private float _invincibilityDurationTime;
 
-        private float _dashHitDurationTime;
-
-        [Command(requiresAuthority = false)]
-        public void CmdHitByDash(float effectDuration)
+        public bool ReceiveHit(float invincibilityEffectDuration)
         {
-            if (!HasDashHitDurationTime)
+            if (IsInvincible)
             {
-                _playerColor = Color.red;
-                _dashHitDurationTime = Time.time + effectDuration;
+                return false;
             }
+
+            _playerColor = Color.red;
+            _invincibilityDurationTime = Time.time + invincibilityEffectDuration;
+            return true;
         }
 
         public override void OnStartLocalPlayer()
@@ -59,6 +70,10 @@
 
             _playerMovement = new PlayerMovement(capsuleCollider, rigidbody, _playerData, _playerCameraHolderTransform, transform);
             _playerCamera = new PlayerCamera(_playerCameraData, _playerCameraHolderTransform, transform, camera.transform);
+
+            Vector3 scoreHolderLocalScale = _playerScoreTextHolderTransform.localScale;
+            scoreHolderLocalScale.x *= -1f;
+            _playerScoreTextHolderTransform.localScale = scoreHolderLocalScale;
         }
 
         private void OnDestroy()
@@ -68,17 +83,19 @@
 
         private void Update()
         {
-            if (!isLocalPlayer)
+            if (IsInvincible && Time.time > _invincibilityDurationTime)
             {
-                return;
+                CmdExpireInvincibility();
             }
 
-            _playerMovement.Update();
-            _playerCamera?.Update();
-
-            if (HasDashHitDurationTime && Time.time > _dashHitDurationTime)
+            if (isLocalPlayer)
             {
-                CmdDashHitExpired();
+                _playerMovement.Update();
+                _playerCamera?.Update();
+            }
+            else
+            {
+                _playerScoreTextHolderTransform.LookAt(Camera.main.transform);
             }
         }
 
@@ -97,22 +114,43 @@
 
         private void OnCollisionEnter(Collision collision)
         {
-            if (isLocalPlayer && _playerMovement.IsDashing && collision.gameObject.TryGetComponent(out Player player))
+            if (isLocalPlayer && _playerMovement.IsDashing && collision.gameObject.TryGetComponent(out Player hitPlayer))
             {
-                player.CmdHitByDash(_playerData.DashHitDurationTime);
+                CmdHit(hitPlayer, _playerData.DashInvincibilityTime);
             }
         }
 
-        private bool HasDashHitDurationTime => _dashHitDurationTime > NoDashHitDurationTime;
-
-        [Command]
-        private void CmdDashHitExpired()
+        [Command(requiresAuthority = false)]
+        private void CmdHit(Player hitPlayer, float invincibilityEffectDuration)
         {
-            _playerColor = Color.white;
-            _dashHitDurationTime = NoDashHitDurationTime;
+            if (hitPlayer.ReceiveHit(invincibilityEffectDuration))
+            {
+                TargetIncreaseScore();
+            }
         }
 
-        private void OnColorChanged(Color oldValue, Color newValue)
+        [TargetRpc]
+        private void TargetIncreaseScore()
+        {
+            CmdIncreaseScore();
+        }
+
+        private bool IsInvincible => _invincibilityDurationTime != InvincibilityDurationTimeMin;
+
+        [Command(requiresAuthority = false)]
+        private void CmdExpireInvincibility()
+        {
+            _playerColor = Color.white;
+            _invincibilityDurationTime = InvincibilityDurationTimeMin;
+        }
+
+        [Command(requiresAuthority = false)]
+        private void CmdIncreaseScore()
+        {
+            _playerScore++;
+        }
+
+        private void OnColorChanged(Color oldColor, Color newColor)
         {
             if (_playerMeshMaterial == null)
             {
@@ -121,6 +159,11 @@
 
             _playerMeshMaterial.color = _playerColor;
             _playerMeshRenderer.material = _playerMeshMaterial;
+        }
+
+        private void OnScoreChanged(float oldScore, float newScore)
+        {
+            _playerScoreText.text = _playerScore.ToString();
         }
     }
 }
