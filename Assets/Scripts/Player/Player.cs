@@ -86,8 +86,10 @@
             }
         }
 
-        public override void OnStopLocalPlayer()
+        public override void OnDeserialize(NetworkReader reader, bool initialState)
         {
+            base.OnDeserialize(reader, initialState);
+
             if (_scenePlayerRespawn != null)
             {
                 _scenePlayerRespawn.CmdRemovePlayer(this);

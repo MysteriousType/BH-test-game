@@ -10,7 +10,7 @@
         [SerializeField]
         private Text _winnerCanvasText;
 
-        [SyncVar(hook = nameof(OnStatusTextChanged))]
+        [SyncVar(hook = nameof(OnWinnerTextChanged))]
         private string _text = string.Empty;
 
         public void ResetText() => _text = string.Empty;
@@ -23,7 +23,7 @@
             }
         }
 
-        private void OnStatusTextChanged(string oldText, string newText)
+        private void OnWinnerTextChanged(string oldText, string newText)
         {
             _winnerCanvasText.text = _text;
         }
