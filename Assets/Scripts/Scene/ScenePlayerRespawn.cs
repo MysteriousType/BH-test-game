@@ -2,19 +2,36 @@
 {
     using Assets.Scripts.Player;
     using Mirror;
+    using UnityEngine;
 
     public class ScenePlayerRespawn : NetworkBehaviour
     {
+        private const float RespawnDelayDurationTimeMin = 0f;
         private readonly SyncList<Player> Players = new SyncList<Player>();
 
-        [Command(requiresAuthority = false)]
-        public void AddPlayer(Player player) => Players.Add(player);
+        [Header("Respawn Settings")]
+        [SerializeField]
+        private float _respawnDelayTime = 5f;
+
+        private float _respawnDelayDurationTime;
 
         [Command(requiresAuthority = false)]
-        public void RemovePlayer(Player player) => Players.Remove(player);
+        public void CmdAddPlayer(Player player) => Players.Add(player);
 
         [Command(requiresAuthority = false)]
-        public void RespawnAll()
+        public void CmdRemovePlayer(Player player) => Players.Remove(player);
+
+        [Command(requiresAuthority = false)]
+        public void CmdDelayedRespawnAll()
+        {
+            if (!IsInRespawnMode)
+            {
+                _respawnDelayDurationTime = Time.time + _respawnDelayTime;
+            }
+        }
+
+        [Command(requiresAuthority = false)]
+        private void CmdRespawnAll()
         {
             for (int i = 0; i < Players.Count; i++)
             {
@@ -22,5 +39,16 @@
                 Players[i].RpcRespawn();
             }
         }
+
+        private void Update()
+        {
+            if (IsInRespawnMode && Time.time > _respawnDelayDurationTime)
+            {
+                _respawnDelayDurationTime = RespawnDelayDurationTimeMin;
+                CmdRespawnAll();
+            }
+        }
+
+        private bool IsInRespawnMode => _respawnDelayDurationTime != RespawnDelayDurationTimeMin;
     }
 }

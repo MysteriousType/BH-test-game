@@ -53,13 +53,14 @@
         {
             _playerScore = ScoreDefault;
             CmdExpireInvincibility();
+            ResetWinnerText();
         }
 
         [ClientRpc]
         public void RpcRespawn()
         {
-            int index = Random.Range(0, NetworkManager.startPositions.Count);
-            transform.position = NetworkManager.startPositions[index].position;
+            int startPositionIndex = Random.Range(0, NetworkManager.startPositions.Count);
+            transform.position = NetworkManager.startPositions[startPositionIndex].position;
         }
 
         public bool ReceiveHit(float invincibilityEffectDuration)
@@ -81,7 +82,7 @@
 
             if (_scenePlayerRespawn != null)
             {
-                _scenePlayerRespawn.AddPlayer(this);
+                _scenePlayerRespawn.CmdAddPlayer(this);
             }
         }
 
@@ -89,7 +90,7 @@
         {
             if (_scenePlayerRespawn != null)
             {
-                _scenePlayerRespawn.RemovePlayer(this);
+                _scenePlayerRespawn.CmdRemovePlayer(this);
             }
         }
 
@@ -174,14 +175,11 @@
 
             if (_playerScore == ScoreToWin)
             {
-                if (_sceneWinnerText != null)
-                {
-                    _sceneWinnerText.SetText($"{gameObject.name} is winner!");
-                }
+                SetWinnerText($"{gameObject.name} is winner!");
 
                 if (_scenePlayerRespawn != null)
                 {
-                    _scenePlayerRespawn.RespawnAll();
+                    _scenePlayerRespawn.CmdDelayedRespawnAll();
                 }
             }
         }
@@ -224,6 +222,22 @@
             Vector3 scoreHolderLocalScale = _playerScoreTextHolderTransform.localScale;
             scoreHolderLocalScale.x *= -1f;
             _playerScoreTextHolderTransform.localScale = scoreHolderLocalScale;
+        }
+
+        private void SetWinnerText(string text)
+        {
+            if (_sceneWinnerText != null)
+            {
+                _sceneWinnerText.SetText(text);
+            }
+        }
+
+        private void ResetWinnerText()
+        {
+            if (_sceneWinnerText != null)
+            {
+                _sceneWinnerText.ResetText();
+            }
         }
     }
 }
