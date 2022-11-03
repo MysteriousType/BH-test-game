@@ -261,7 +261,7 @@ MonoBehaviour:
   syncMode: 0
   syncInterval: 0.1
   clientAuthority: 1
-  sendRate: 10
+  sendRate: 20
   bufferTimeMultiplier: 3
   bufferSizeLimit: 64
   catchupNegativeThreshold: -1
