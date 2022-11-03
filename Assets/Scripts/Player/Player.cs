@@ -70,6 +70,10 @@
 
             _playerMovement = new PlayerMovement(capsuleCollider, rigidbody, _playerData, _playerCameraHolderTransform, transform);
             _playerCamera = new PlayerCamera(_playerCameraData, _playerCameraHolderTransform, transform, camera.transform);
+
+            Vector3 scoreHolderLocalScale = _playerScoreTextHolderTransform.localScale;
+            scoreHolderLocalScale.x *= -1f;
+            _playerScoreTextHolderTransform.localScale = scoreHolderLocalScale;
         }
 
         private void OnDestroy()
