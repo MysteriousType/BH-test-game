@@ -60,6 +60,7 @@
         {
             int index = Random.Range(0, NetworkManager.startPositions.Count);
             transform.position = NetworkManager.startPositions[index].position;
+            SetWinnerText(string.Empty);
         }
 
         public bool ReceiveHit(float invincibilityEffectDuration)
@@ -174,10 +175,7 @@
 
             if (_playerScore == ScoreToWin)
             {
-                if (_sceneWinnerText != null)
-                {
-                    _sceneWinnerText.SetText($"{gameObject.name} is winner!");
-                }
+                SetWinnerText($"{gameObject.name} is winner!");
 
                 if (_scenePlayerRespawn != null)
                 {
@@ -224,6 +222,14 @@
             Vector3 scoreHolderLocalScale = _playerScoreTextHolderTransform.localScale;
             scoreHolderLocalScale.x *= -1f;
             _playerScoreTextHolderTransform.localScale = scoreHolderLocalScale;
+        }
+
+        private void SetWinnerText(string text)
+        {
+            if (_sceneWinnerText != null)
+            {
+                _sceneWinnerText.SetText(text);
+            }
         }
     }
 }
