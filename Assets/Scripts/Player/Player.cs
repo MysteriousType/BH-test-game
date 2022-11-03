@@ -86,16 +86,6 @@
             }
         }
 
-        public override void OnDeserialize(NetworkReader reader, bool initialState)
-        {
-            base.OnDeserialize(reader, initialState);
-
-            if (_scenePlayerRespawn != null)
-            {
-                _scenePlayerRespawn.CmdRemovePlayer(this);
-            }
-        }
-
         private void Awake()
         {
             _sceneWinnerText = FindObjectOfType<SceneWinnerText>();
@@ -105,6 +95,11 @@
         private void OnDestroy()
         {
             Destroy(_playerMeshMaterial);
+
+            if (_scenePlayerRespawn != null)
+            {
+                _scenePlayerRespawn.CmdRemovePlayer(this);
+            }
         }
 
         private void Update()
