@@ -157,7 +157,7 @@
         {
             _playerScore++;
 
-            if (_playerScore == ScoreToWin)
+            if (_sceneWinnerText != null && _playerScore == ScoreToWin)
             {
                 _sceneWinnerText.SetText($"{gameObject.name} is winner!");
             }
