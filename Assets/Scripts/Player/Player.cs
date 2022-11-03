@@ -43,6 +43,18 @@
         private Material _playerMeshMaterial;
         private float _invincibilityDurationTime;
 
+        public bool ReceiveHit(float invincibilityEffectDuration)
+        {
+            if (IsInvincible)
+            {
+                return false;
+            }
+
+            _playerColor = Color.red;
+            _invincibilityDurationTime = Time.time + invincibilityEffectDuration;
+            return true;
+        }
+
         public override void OnStartLocalPlayer()
         {
             Camera camera = Camera.main;
@@ -98,38 +110,23 @@
 
         private void OnCollisionEnter(Collision collision)
         {
-            bool canDash = isLocalPlayer && _playerMovement.IsDashing;
-
-            if (canDash && collision.gameObject.TryGetComponent(out Player hitPlayer))
+            if (isLocalPlayer && _playerMovement.IsDashing && collision.gameObject.TryGetComponent(out Player hitPlayer))
             {
-                CmdHit2(_playerData.DashInvincibilityTime, collision.gameObject);
-                //hitPlayer.CmdHit(_playerData.DashInvincibilityTime, GetComponent<NetworkIdentity>());
+                CmdHit(hitPlayer, _playerData.DashInvincibilityTime);
             }
-        }
-
-        public bool Do()
-        {
-            if (!IsInvincible)
-            {
-                _playerColor = Color.red;
-                _invincibilityDurationTime = Time.time + 3f;
-                return true;
-            }
-
-            return false;
         }
 
         [Command(requiresAuthority = false)]
-        public void CmdHit2(float invincibilityEffectDuration, GameObject attacked)
+        private void CmdHit(Player hitPlayer, float invincibilityEffectDuration)
         {
-            if (attacked.TryGetComponent(out Player player) && player.Do())
+            if (hitPlayer.ReceiveHit(invincibilityEffectDuration))
             {
-                TargetIncreaseScore2();
+                TargetIncreaseScore();
             }
         }
 
         [TargetRpc]
-        private void TargetIncreaseScore2()
+        private void TargetIncreaseScore()
         {
             CmdIncreaseScore();
         }
